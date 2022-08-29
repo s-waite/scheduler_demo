@@ -1,24 +1,17 @@
 package dev.sam.scheduler.controller;
 
 import dev.sam.scheduler.App;
+import dev.sam.scheduler.helper.stageHelper;
 import dev.sam.scheduler.model.LocalizationEnum;
 import dev.sam.scheduler.view.FlagButton;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -37,39 +30,50 @@ public class LoginController implements Initializable {
         initializeClickListeners();
     }
 
+    /**
+     * Initialize the click listeners for the scene.
+     */
     private void initializeClickListeners() {
         usFlagButton.setOnAction(actionEvent -> {
+            // Reload the scene with a new locale if it is not already the active locale
             if (!usFlagButton.isChecked()) {
-                usFlagButton.check();
-                frenchFlagButton.uncheck();
+                LocalizationEnum.INSTANCE.setCurrentLocale(Locale.ENGLISH);
+                stage = (Stage) usFlagButton.getScene().getWindow();
+                try {
+                    stageHelper.loadSceneIntoStage(stage, "login.fxml");
+                    stage.show();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-//            stage = getCurrentStage(usFlagButton);
-//            LocalizationEnum.INSTANCE.setCurrentLocale(Locale.FRENCH);
-//            ResourceBundle bundle = ResourceBundle.getBundle("dev.sam.scheduler.strings", LocalizationEnum.INSTANCE.getCurrentLocale());
-//            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("login.fxml"), bundle);
-//            try {
-//                Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-//                stage.setScene(scene);
-//            } catch (IOException e) {
-//               System.err.println(e.getMessage());
-//            }
         });
 
+        // Same actions as for the US flag button
         frenchFlagButton.setOnAction(actionEvent -> {
             if (!frenchFlagButton.isChecked()) {
-                frenchFlagButton.check();
-                usFlagButton.uncheck();
+                LocalizationEnum.INSTANCE.setCurrentLocale(Locale.FRENCH);
+                stage = (Stage) frenchFlagButton.getScene().getWindow();
+                try {
+                    stageHelper.loadSceneIntoStage(stage, "login.fxml");
+                    stage.show();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
+
         });
     }
 
-private Stage getCurrentStage(Node node) {
-        return (Stage) node.getScene().getWindow();
-}
 
+    /**
+     * Initialize the nodes for the scene.
+     * <p>
+     * This includes nodes that cannot be easily defined in FXML and inserting dynamic data into the nodes.
+     */
     private void initializeNodes() {
         final int FLAG_HEIGHT = 20;
 
+        // Create two flag buttons for setting the language of the login screen
         Image americanFlag = new Image(String.valueOf(App.class.getResource("usFlag.svg.png")));
         ImageView americanFlagView = new ImageView(americanFlag);
         americanFlagView.setFitHeight(FLAG_HEIGHT);
@@ -82,7 +86,13 @@ private Stage getCurrentStage(Node node) {
 
         usFlagButton.setGraphic(americanFlagView);
         frenchFlagButton.setGraphic(frenchFlagView);
-        usFlagButton.check();
+
+        // Highlights ("checks") a flag button based on the current locale of the app
+        if (LocalizationEnum.INSTANCE.getCurrentLocale() == Locale.ENGLISH) {
+            usFlagButton.check();
+        } else {
+            frenchFlagButton.check();
+        }
 
     }
 }
