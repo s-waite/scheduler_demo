@@ -1,0 +1,11 @@
+.imageButton {
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-border-width: 0;
+    -fx-border-color: #007AFF;
+}
+
+.imageButton:hover,
+.checked {
+    -fx-border-width: 2;
+}
