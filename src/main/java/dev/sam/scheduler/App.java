@@ -1,11 +1,14 @@
 package dev.sam.scheduler;
 
+import dev.sam.scheduler.dao.UserDAO;
+import dev.sam.scheduler.dao.UserDAOImpl;
 import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.LocalizationEnum;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Locale;
 
 public class App extends Application {
@@ -16,7 +19,7 @@ public class App extends Application {
 
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) throws IOException, SQLException {
         LocalizationEnum.INSTANCE.setCurrentLocale(Locale.getDefault());
         StageHelper.loadSceneIntoStage(stage, "login.fxml");
         stage.setWidth(APP_WIDTH);

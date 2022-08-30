@@ -20,12 +20,12 @@
                   <Font size="26.0" />
                </font>
             </Text>
-            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" alignment="CENTER">
                <children>
                   <TextField maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.userId" />
                   <TextField maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.password" />
-                  <Label fx:id="locationLabel" text="%login.locationPrompt"/>
-                  <Button defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Login" />
+                  <Label fx:id="locationLabel" alignment="CENTER" text="%login.locationPrompt" minWidth="200"/>
+                  <Button fx:id="loginButton" defaultButton="true" maxWidth="130" minWidth="130" mnemonicParsing="false" text="%login.submit" />
                </children>
             </VBox>
          </children>
