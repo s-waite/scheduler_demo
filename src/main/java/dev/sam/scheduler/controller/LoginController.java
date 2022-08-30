@@ -1,18 +1,20 @@
 package dev.sam.scheduler.controller;
 
 import dev.sam.scheduler.App;
-import dev.sam.scheduler.helper.stageHelper;
+import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.LocalizationEnum;
 import dev.sam.scheduler.view.FlagButton;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.ZoneId;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -21,6 +23,8 @@ public class LoginController implements Initializable {
     private FlagButton usFlagButton;
     @FXML
     private FlagButton frenchFlagButton;
+    @FXML
+    private Label locationLabel;
     private Stage stage;
 
 
@@ -40,7 +44,7 @@ public class LoginController implements Initializable {
                 LocalizationEnum.INSTANCE.setCurrentLocale(Locale.ENGLISH);
                 stage = (Stage) usFlagButton.getScene().getWindow();
                 try {
-                    stageHelper.loadSceneIntoStage(stage, "login.fxml");
+                    StageHelper.loadSceneIntoStage(stage, "login.fxml");
                     stage.show();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -54,7 +58,7 @@ public class LoginController implements Initializable {
                 LocalizationEnum.INSTANCE.setCurrentLocale(Locale.FRENCH);
                 stage = (Stage) frenchFlagButton.getScene().getWindow();
                 try {
-                    stageHelper.loadSceneIntoStage(stage, "login.fxml");
+                    StageHelper.loadSceneIntoStage(stage, "login.fxml");
                     stage.show();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -88,11 +92,15 @@ public class LoginController implements Initializable {
         frenchFlagButton.setGraphic(frenchFlagView);
 
         // Highlights ("checks") a flag button based on the current locale of the app
-        if (LocalizationEnum.INSTANCE.getCurrentLocale() == Locale.ENGLISH) {
+        if (LocalizationEnum.INSTANCE.getCurrentLocale().getLanguage().equals("en")) {
             usFlagButton.check();
         } else {
             frenchFlagButton.check();
         }
+
+        locationLabel.setTextOverrun(OverrunStyle.CLIP);
+        String locationLabelText = locationLabel.getText();
+        locationLabel.setText(locationLabelText + ZoneId.systemDefault());
 
     }
 }

@@ -1,6 +1,7 @@
 module dev.sam.scheduler {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.sql;
 
 
     opens dev.sam.scheduler to javafx.fxml;

@@ -1,15 +1,12 @@
 package dev.sam.scheduler;
 
-import dev.sam.scheduler.helper.stageHelper;
+import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.LocalizationEnum;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Locale;
-import java.util.ResourceBundle;
 
 public class App extends Application {
     private final static int APP_WIDTH = 600;
@@ -20,7 +17,8 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        stageHelper.loadSceneIntoStage(stage, "login.fxml");
+        LocalizationEnum.INSTANCE.setCurrentLocale(Locale.getDefault());
+        StageHelper.loadSceneIntoStage(stage, "login.fxml");
         stage.setWidth(APP_WIDTH);
         stage.setHeight(APP_HEIGHT);
         stage.setMinWidth(APP_MIN_WIDTH);

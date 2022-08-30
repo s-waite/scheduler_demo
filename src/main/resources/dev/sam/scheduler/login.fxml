@@ -24,7 +24,7 @@
                <children>
                   <TextField maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.userId" />
                   <TextField maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.password" />
-                  <Label fx:id="locationLabel" text="%login.locationPrompt" />
+                  <Label fx:id="locationLabel" text="%login.locationPrompt"/>
                   <Button defaultButton="true" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Login" />
                </children>
             </VBox>
