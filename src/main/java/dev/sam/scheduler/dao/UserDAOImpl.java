@@ -12,7 +12,7 @@ public class UserDAOImpl implements UserDAO {
     public ArrayList<User> getAllUsers() throws SQLException {
         ArrayList<User> allUsers = new ArrayList<>();
         DB.makeConnection();
-        Statement stmt = DB.connection.createStatement();
+        Statement stmt = DB.getConnection().createStatement();
         ResultSet rs = stmt.executeQuery("SELECT * FROM USERS");
         while (rs.next()) {
             int userId = rs.getInt("User_ID");

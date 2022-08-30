@@ -1,19 +1,25 @@
 package dev.sam.scheduler.controller;
 
 import dev.sam.scheduler.App;
+import dev.sam.scheduler.dao.UserDAOImpl;
+import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.LocalizationEnum;
+import dev.sam.scheduler.model.User;
 import dev.sam.scheduler.view.FlagButton;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.OverrunStyle;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -24,12 +30,21 @@ public class LoginController implements Initializable {
     @FXML
     private FlagButton frenchFlagButton;
     @FXML
+    private Button loginButton;
+    @FXML
     private Label locationLabel;
+    @FXML
+    private TextField userNameTextField;
+    @FXML
+    private TextField passwordTextField;
     private Stage stage;
+    private UserDAOImpl userDAO;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        userDAO = new UserDAOImpl();
+        stage = App.getStage();
         initializeNodes();
         initializeClickListeners();
     }
@@ -42,7 +57,6 @@ public class LoginController implements Initializable {
             // Reload the scene with a new locale if it is not already the active locale
             if (!usFlagButton.isChecked()) {
                 LocalizationEnum.INSTANCE.setCurrentLocale(Locale.ENGLISH);
-                stage = (Stage) usFlagButton.getScene().getWindow();
                 try {
                     StageHelper.loadSceneIntoStage(stage, "login.fxml");
                     stage.show();
@@ -56,7 +70,6 @@ public class LoginController implements Initializable {
         frenchFlagButton.setOnAction(actionEvent -> {
             if (!frenchFlagButton.isChecked()) {
                 LocalizationEnum.INSTANCE.setCurrentLocale(Locale.FRENCH);
-                stage = (Stage) frenchFlagButton.getScene().getWindow();
                 try {
                     StageHelper.loadSceneIntoStage(stage, "login.fxml");
                     stage.show();
@@ -66,6 +79,31 @@ public class LoginController implements Initializable {
             }
 
         });
+
+        loginButton.setOnAction(actionEvent -> {
+            if (isValidLogin()) {
+//                StageHelper.loadSceneIntoStage(stage, );
+            } else {
+            }
+        });
+
+    }
+
+    private boolean isValidLogin() {
+        String userNameInput = userNameTextField.getText();
+        String passwordInput = passwordTextField.getText();
+
+        try {
+            for (User user : userDAO.getAllUsers()) {
+                if (user.getUserName().equals(userNameInput) && user.getPassword().equals(passwordInput)) {
+                    DB.setActiveUser(user);
+                    return true;
+                }
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

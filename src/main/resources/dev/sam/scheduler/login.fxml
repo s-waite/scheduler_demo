@@ -22,8 +22,8 @@
             </Text>
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" alignment="CENTER">
                <children>
-                  <TextField maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.userId" />
-                  <TextField maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.password" />
+                  <TextField fx:id="userNameTextField" maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.userId" />
+                  <TextField fx:id="passwordTextField" maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.password" />
                   <Label fx:id="locationLabel" alignment="CENTER" text="%login.locationPrompt" minWidth="200"/>
                   <Button fx:id="loginButton" defaultButton="true" maxWidth="130" minWidth="130" mnemonicParsing="false" text="%login.submit" />
                </children>
