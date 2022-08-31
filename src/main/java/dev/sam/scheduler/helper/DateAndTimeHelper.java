@@ -13,7 +13,7 @@ public class DateAndTimeHelper {
     }
 
     public static String offsetDateTimeToLocalTimeStr(OffsetDateTime time) {
-        return OffsetDateTime.now(ZoneId.systemDefault()).format(formatter);
+        return time.atZoneSameInstant(ZoneId.systemDefault()).format(formatter);
     }
 
 }
