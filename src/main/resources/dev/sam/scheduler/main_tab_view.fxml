@@ -6,15 +6,14 @@
 
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
   <tabs>
-    <Tab text="Untitled Tab 1">
+    <Tab text="Customers">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                   <fx:include source="customer_table_view.fxml" AnchorPane.bottomAnchor="-31.5" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children></AnchorPane>
       </content>
     </Tab>
-    <Tab text="Untitled Tab 2">
-      <content>
-        <fx:include source="customer_table_view.fxml" />
-      </content>
-    </Tab>
+    <Tab text="Untitled Tab 2" />
   </tabs>
 </TabPane>

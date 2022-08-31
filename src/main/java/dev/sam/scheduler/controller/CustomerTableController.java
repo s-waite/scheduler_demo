@@ -78,6 +78,10 @@ public class CustomerTableController implements Initializable {
            return new ReadOnlyObjectWrapper<>(DateAndTimeHelper.offsetDateTimeToLocalTimeStr(cellData.getValue().getCreationDate()));
        });
 
+       lastUpdatedDateColumn.setCellValueFactory(cellData -> {
+           return new ReadOnlyObjectWrapper<>(DateAndTimeHelper.offsetDateTimeToLocalTimeStr(cellData.getValue().getLastUpdatedDate()));
+       });
+
 
 
     }
