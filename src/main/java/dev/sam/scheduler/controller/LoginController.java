@@ -1,6 +1,8 @@
 package dev.sam.scheduler.controller;
 
 import dev.sam.scheduler.App;
+import dev.sam.scheduler.dao.CustomerDAO;
+import dev.sam.scheduler.dao.CustomerDAOImpl;
 import dev.sam.scheduler.dao.UserDAOImpl;
 import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.helper.StageHelper;
@@ -82,8 +84,13 @@ public class LoginController implements Initializable {
 
         loginButton.setOnAction(actionEvent -> {
             if (isValidLogin()) {
-//                StageHelper.loadSceneIntoStage(stage, );
+                try {
+                    StageHelper.loadSceneIntoStage(stage, "main_tab_view.fxml");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
+                //TODO: show error
             }
         });
 
@@ -92,6 +99,13 @@ public class LoginController implements Initializable {
     private boolean isValidLogin() {
         String userNameInput = userNameTextField.getText();
         String passwordInput = passwordTextField.getText();
+
+        CustomerDAO customerDAO = new CustomerDAOImpl();
+        try {
+            customerDAO.getAllCustomers();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             for (User user : userDAO.getAllUsers()) {
