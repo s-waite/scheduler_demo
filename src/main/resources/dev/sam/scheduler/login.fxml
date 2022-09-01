@@ -11,6 +11,7 @@
 <?import javafx.scene.text.Text?>
 
 <?import dev.sam.scheduler.view.FlagButton?>
+<?import javafx.scene.control.PasswordField?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.sam.scheduler.controller.LoginController">
    <children>
       <VBox alignment="CENTER" fillWidth="false" layoutX="219.0" layoutY="4.0" prefHeight="392.0" prefWidth="163.0" spacing="15.0" AnchorPane.bottomAnchor="4.0" AnchorPane.leftAnchor="219.0" AnchorPane.rightAnchor="218.0" AnchorPane.topAnchor="4.0">
@@ -23,7 +24,7 @@
             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" alignment="CENTER">
                <children>
                   <TextField fx:id="userNameTextField" maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.userId" />
-                  <TextField fx:id="passwordTextField" maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.password" />
+                  <PasswordField fx:id="passwordField" maxWidth="130.0" minWidth="130.0" prefWidth="130.0" promptText="%login.password" />
                   <Label fx:id="locationLabel" alignment="CENTER" text="%login.locationPrompt" minWidth="200"/>
                   <Button fx:id="loginButton" defaultButton="true" maxWidth="130" minWidth="130" mnemonicParsing="false" text="%login.submit" />
                </children>

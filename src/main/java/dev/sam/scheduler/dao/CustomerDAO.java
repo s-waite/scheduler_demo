@@ -8,4 +8,5 @@ import java.util.ArrayList;
 
 public interface CustomerDAO {
     ObservableList<Customer> getAllCustomers() throws SQLException;
+    void insertCustomer(Customer customer) throws SQLException;
 }

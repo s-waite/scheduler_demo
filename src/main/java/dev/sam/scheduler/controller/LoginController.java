@@ -11,10 +11,7 @@ import dev.sam.scheduler.model.User;
 import dev.sam.scheduler.view.FlagButton;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.OverrunStyle;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -38,7 +35,7 @@ public class LoginController implements Initializable {
     @FXML
     private TextField userNameTextField;
     @FXML
-    private TextField passwordTextField;
+    private PasswordField passwordField;
     private Stage stage;
     private UserDAOImpl userDAO;
 
@@ -98,7 +95,7 @@ public class LoginController implements Initializable {
 
     private boolean isValidLogin() {
         String userNameInput = userNameTextField.getText();
-        String passwordInput = passwordTextField.getText();
+        String passwordInput = passwordField.getText();
 
         CustomerDAO customerDAO = new CustomerDAOImpl();
         try {

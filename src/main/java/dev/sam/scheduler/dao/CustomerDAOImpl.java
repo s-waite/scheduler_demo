@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 
 public class CustomerDAOImpl implements CustomerDAO {
     @Override
@@ -49,5 +48,28 @@ public class CustomerDAOImpl implements CustomerDAO {
         }
         DB.closeConnection();
         return allCustomers;
+    }
+
+    @Override
+    public void insertCustomer(Customer customer) throws SQLException {
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        stmt.executeUpdate(
+                "INSERT INTO customers" +
+                        "VALUES" +
+                        "(" +
+                        customer.getId() + "," +
+                        customer.getName() + "," +
+                        customer.getAddress() + "," +
+                        customer.getPostalCode() + "," +
+                        customer.getPhone() + "," +
+                        customer.getCreationDate() + "," +
+                        customer.getCreatedBy() + "," +
+                        customer.getLastUpdatedDate() + "," +
+                        customer.getLastUpdatedBy() + "," +
+                        customer.getDivisionId() + "," +
+                        ")"
+        );
+        DB.closeConnection();
     }
 }
