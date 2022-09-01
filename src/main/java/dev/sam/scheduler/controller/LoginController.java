@@ -23,7 +23,7 @@ import java.time.ZoneId;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable {
+public class LoginController implements Initializable, ControllerInterface {
     @FXML
     private FlagButton usFlagButton;
     @FXML
@@ -51,7 +51,7 @@ public class LoginController implements Initializable {
     /**
      * Initialize the click listeners for the scene.
      */
-    private void initializeClickListeners() {
+    public void initializeClickListeners() {
         usFlagButton.setOnAction(actionEvent -> {
             // Reload the scene with a new locale if it is not already the active locale
             if (!usFlagButton.isChecked()) {
@@ -123,7 +123,7 @@ public class LoginController implements Initializable {
      * <p>
      * This includes nodes that cannot be easily defined in FXML and inserting dynamic data into the nodes.
      */
-    private void initializeNodes() {
+    public void initializeNodes() {
         final int FLAG_HEIGHT = 20;
 
         // Create two flag buttons for setting the language of the login screen

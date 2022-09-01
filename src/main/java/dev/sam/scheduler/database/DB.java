@@ -1,5 +1,6 @@
 package dev.sam.scheduler.database;
 
+import dev.sam.scheduler.model.Customer;
 import dev.sam.scheduler.model.User;
 
 import java.sql.Connection;
@@ -13,6 +14,15 @@ public class DB {
     private static final String password = "password";
     private static Connection connection;
     private static User activeUser;
+    private static Customer activeCustomer;
+
+    public static Customer getActiveCustomer() {
+        return activeCustomer;
+    }
+
+    public static void setActiveCustomer(Customer activeCustomer) {
+        DB.activeCustomer = activeCustomer;
+    }
 
     public static void makeConnection() throws SQLException {
         connection = DriverManager.getConnection(dbURL, userName, password);
@@ -27,7 +37,7 @@ public class DB {
     }
 
     public static void setActiveUser(User user) {
-        activeUser = user;
+        DB.activeUser = user;
     }
 
     public static Connection getConnection() {
