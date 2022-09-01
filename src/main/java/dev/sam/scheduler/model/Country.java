@@ -9,6 +9,12 @@ public class Country {
         this.countryName = countryName;
     }
 
+    // Used in the customer form combo box
+    @Override
+    public String toString() {
+       return this.countryName;
+    }
+
     public int getCountryId() {
         return countryId;
     }

@@ -7,8 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-
-<AnchorPane fx:controller="dev.sam.scheduler.controller.CustomerFormController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.sam.scheduler.controller.CustomerFormController">
    <children>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -42,6 +41,12 @@
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Country" />
                         <ComboBox fx:id="countryComboBox" prefWidth="170.0" />
+                     </children>
+                  </VBox>
+                  <VBox layoutX="10.0" layoutY="416.0" spacing="2.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="State/Province" />
+                        <ComboBox fx:id="firstDivComboBox" prefWidth="170.0" />
                      </children>
                   </VBox>
                </children>

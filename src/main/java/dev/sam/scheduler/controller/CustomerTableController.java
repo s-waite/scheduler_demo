@@ -126,5 +126,7 @@ public class CustomerTableController implements Initializable {
 
         });
 
+
     }
+
 }
