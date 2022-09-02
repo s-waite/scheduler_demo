@@ -1,11 +1,9 @@
 package dev.sam.scheduler.controller;
 
 import dev.sam.scheduler.dao.CountryDAOImpl;
-import dev.sam.scheduler.dao.CustomerDAO;
 import dev.sam.scheduler.dao.CustomerDAOImpl;
 import dev.sam.scheduler.dao.FirstLevelDivisionDAOImpl;
 import dev.sam.scheduler.database.DB;
-import dev.sam.scheduler.helper.DateAndTimeHelper;
 import dev.sam.scheduler.model.Country;
 import dev.sam.scheduler.model.Customer;
 import dev.sam.scheduler.model.FirstLevelDivision;
@@ -17,13 +15,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +63,7 @@ public class CustomerFormController implements Initializable, Controller, Form {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        customerDAO = new CustomerDAOImpl();
         try {
             queryStaticDbData();
         } catch (SQLException e) {
@@ -81,7 +77,12 @@ public class CustomerFormController implements Initializable, Controller, Form {
             customer = DB.getActiveCustomer();
             loadCustomerInfo(customer);
         } else {
-            // TODO create user id and populate item
+            // TODO query database for highest customer id
+            try {
+                System.out.println(customerDAO.getMaxCustomerId());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         activeUser = DB.getActiveUser();
     }
@@ -251,7 +252,6 @@ public class CustomerFormController implements Initializable, Controller, Form {
     public void saveForm() throws SQLException {
         Integer i = 11;
         DB.setActiveUser(null);
-        customerDAO = new CustomerDAOImpl();
         customerDAO.insertCustomer(new Customer(
                 i,
                 nameInput.getText(),

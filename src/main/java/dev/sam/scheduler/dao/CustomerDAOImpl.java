@@ -73,4 +73,16 @@ public class CustomerDAOImpl implements CustomerDAO {
         stmt.executeUpdate(sqlStatement);
         DB.closeConnection();
     }
+
+    @Override
+    public int getMaxCustomerId() throws SQLException {
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT MAX(Customer_ID) FROM Customers");
+        int maxId = 0;
+        while (rs.next()) {
+             maxId = rs.getInt(1);
+        }
+        return maxId;
+    }
 }
