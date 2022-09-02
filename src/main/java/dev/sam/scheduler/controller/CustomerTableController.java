@@ -135,7 +135,7 @@ public class CustomerTableController implements Initializable, Controller {
         updateCustomerButton.setOnAction(actionEvent -> {
             Stage newStage = new Stage();
             // This will be used by the customer form to load customer information in
-            DB.setActiveCustomer(customerTableView.getSelectionModel().getSelectedItem());
+            SharedData.INSTANCE.setActiveCustomer(customerTableView.getSelectionModel().getSelectedItem());
             try {
                 StageHelper.loadSceneIntoStage(newStage, "customer_form.fxml");
                 // prevents the user from interacting with the customer view while the form is open

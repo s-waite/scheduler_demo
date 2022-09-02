@@ -7,6 +7,7 @@ import dev.sam.scheduler.dao.UserDAOImpl;
 import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.LocalizationEnum;
+import dev.sam.scheduler.model.SharedData;
 import dev.sam.scheduler.model.User;
 import dev.sam.scheduler.view.FlagButton;
 import javafx.fxml.FXML;
@@ -107,7 +108,7 @@ public class LoginController implements Initializable, Controller {
         try {
             for (User user : userDAO.getAllUsers()) {
                 if (user.getUserName().equals(userNameInput) && user.getPassword().equals(passwordInput)) {
-                    DB.setActiveUser(user);
+                    SharedData.INSTANCE.setActiveUser(user);
                     return true;
                 }
             }

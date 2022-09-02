@@ -3,10 +3,8 @@ package dev.sam.scheduler.controller;
 import dev.sam.scheduler.dao.CountryDAOImpl;
 import dev.sam.scheduler.dao.CustomerDAOImpl;
 import dev.sam.scheduler.dao.FirstLevelDivisionDAOImpl;
-import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.model.*;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -49,7 +47,6 @@ public class CustomerFormController implements Initializable, Controller, Form {
     ArrayList<Country> countries;
     ArrayList<FirstLevelDivision> divisions;
     Customer customer;
-    User activeUser;
     int maxCustomerId;
 
 
@@ -74,8 +71,8 @@ public class CustomerFormController implements Initializable, Controller, Form {
 
         // Executes if user is updating/editing customer information instead of creating a new user
         // If creating a new user, finds the max customer ID in the database and load the next int into the customer ID field
-        if (DB.getActiveCustomer() != null) {
-            customer = DB.getActiveCustomer();
+        if (SharedData.INSTANCE.getActiveCustomer() != null) {
+            customer = SharedData.INSTANCE.getActiveCustomer();
             loadCustomerInfo(customer);
         } else {
             try {
@@ -85,7 +82,6 @@ public class CustomerFormController implements Initializable, Controller, Form {
                 throw new RuntimeException(e);
             }
         }
-        activeUser = DB.getActiveUser();
     }
 
     /**
@@ -251,6 +247,8 @@ public class CustomerFormController implements Initializable, Controller, Form {
 
     @Override
     public void saveForm() throws SQLException {
+        User activeUser = SharedData.INSTANCE.getActiveUser();
+
         Integer customerId = Integer.valueOf(customerIdInput.getText());
         String customerName = nameInput.getText();
         String address = addressInput.getText();
@@ -263,7 +261,7 @@ public class CustomerFormController implements Initializable, Controller, Form {
         Integer firstDivId = firstDivComboBox.getValue().getDivisionId();
 
         // TODO: distinguish between updating and creating new item
-        if (DB.getActiveCustomer() == null) {
+        if (SharedData.INSTANCE.getActiveCustomer() == null) {
             Customer newCustomer = new Customer(
                     customerId,
                     customerName,
@@ -285,7 +283,7 @@ public class CustomerFormController implements Initializable, Controller, Form {
             customer.setLastUpdatedDate(modifyDate);
             customer.setLastUpdatedBy(activeUser.getUserName());
             customer.setDivisionId(firstDivId);
-            customerDAO.updateCustomer(customer, DB.getActiveCustomer().getId());
+            customerDAO.updateCustomer(customer, SharedData.INSTANCE.getActiveCustomer().getId());
         }
 
 
