@@ -1,5 +1,5 @@
 package dev.sam.scheduler.controller;
-interface ControllerInterface {
+interface Controller {
     void initializeNodes();
     void initializeClickListeners();
 }

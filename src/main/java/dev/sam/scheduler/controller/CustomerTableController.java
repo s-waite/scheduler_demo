@@ -1,21 +1,17 @@
 package dev.sam.scheduler.controller;
 
-import dev.sam.scheduler.App;
 import dev.sam.scheduler.dao.CustomerDAO;
 import dev.sam.scheduler.dao.CustomerDAOImpl;
 import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.helper.DateAndTimeHelper;
 import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.Customer;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -25,7 +21,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
-public class CustomerTableController implements Initializable, ControllerInterface {
+public class CustomerTableController implements Initializable, Controller {
 
     @FXML
     private Button updateCustomerButton;

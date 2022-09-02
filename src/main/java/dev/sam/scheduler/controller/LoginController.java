@@ -23,7 +23,7 @@ import java.time.ZoneId;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class LoginController implements Initializable, ControllerInterface {
+public class LoginController implements Initializable, Controller {
     @FXML
     private FlagButton usFlagButton;
     @FXML
