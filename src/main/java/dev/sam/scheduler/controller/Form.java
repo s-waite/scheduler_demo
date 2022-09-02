@@ -1,5 +1,6 @@
 package dev.sam.scheduler.controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface Form {
@@ -15,5 +16,7 @@ public interface Form {
 
     ArrayList<ValidationCode> validateForm();
 
-    void saveForm();
+    void saveForm() throws SQLException;
+
+
 }

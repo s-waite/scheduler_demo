@@ -16,4 +16,12 @@ public class DateAndTimeHelper {
         return time.atZoneSameInstant(ZoneId.systemDefault()).format(formatter);
     }
 
+    public static String localDateTimeToUTCDbStr(LocalDateTime time) {
+        return time.atOffset(ZoneOffset.UTC).format(formatter);
+    }
+
+    public static String offsetDateTimeToDbStr(OffsetDateTime offsetDateTime) {
+        return offsetDateTime.format(formatter);
+    }
+
 }

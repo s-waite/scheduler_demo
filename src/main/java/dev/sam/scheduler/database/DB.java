@@ -33,7 +33,7 @@ public class DB {
     }
 
     public static User getActiveUser() {
-        return activeUser;
+        return DB.activeUser;
     }
 
     public static void setActiveUser(User user) {

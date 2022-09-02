@@ -9,6 +9,7 @@ import dev.sam.scheduler.model.Customer;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -64,6 +65,7 @@ public class CustomerTableController implements Initializable, Controller {
         customerDAO = new CustomerDAOImpl();
         initializeNodes();
         initializeClickListeners();
+        System.out.println(DB.getActiveUser());
     }
 
     private void initializeTable() {
@@ -116,36 +118,24 @@ public class CustomerTableController implements Initializable, Controller {
                 StageHelper.loadSceneIntoStage(newStage, "customer_form.fxml");
                 // prevents the user from interacting with the customer view while the form is open
                 newStage.initModality(Modality.APPLICATION_MODAL);
-                newStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowEvent -> {
-                    // TODO: update the table when the form is closed
-                    initializeTable();
-                });
                 newStage.showAndWait();
-
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
         });
 
         updateCustomerButton.setOnAction(actionEvent -> {
             Stage newStage = new Stage();
+            // This will be used by the customer form to load customer information in
             DB.setActiveCustomer(customerTableView.getSelectionModel().getSelectedItem());
             try {
                 StageHelper.loadSceneIntoStage(newStage, "customer_form.fxml");
                 // prevents the user from interacting with the customer view while the form is open
                 newStage.initModality(Modality.APPLICATION_MODAL);
-                newStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST, windowEvent -> {
-                    // TODO: update the table when the form is closed
-                    initializeTable();
-                });
-                // This will be used by the customer form controller so that it knows if we are editing a customer
                 newStage.showAndWait();
-
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
         });
 
     }

@@ -1,20 +1,30 @@
 package dev.sam.scheduler.controller;
 
 import dev.sam.scheduler.dao.CountryDAOImpl;
+import dev.sam.scheduler.dao.CustomerDAO;
+import dev.sam.scheduler.dao.CustomerDAOImpl;
 import dev.sam.scheduler.dao.FirstLevelDivisionDAOImpl;
 import dev.sam.scheduler.database.DB;
+import dev.sam.scheduler.helper.DateAndTimeHelper;
 import dev.sam.scheduler.model.Country;
 import dev.sam.scheduler.model.Customer;
 import dev.sam.scheduler.model.FirstLevelDivision;
+import dev.sam.scheduler.model.User;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -23,6 +33,8 @@ public class CustomerFormController implements Initializable, Controller, Form {
 
     @FXML
     private TextField addressInput;
+    @FXML
+    private TextField customerIdInput;
     @FXML
     private ComboBox<Country> countryComboBox;
     @FXML
@@ -40,10 +52,20 @@ public class CustomerFormController implements Initializable, Controller, Form {
 
     CountryDAOImpl countryDAO;
     FirstLevelDivisionDAOImpl firstLevelDivisionDAO;
+    CustomerDAOImpl customerDAO;
     ArrayList<Country> countries;
     ArrayList<FirstLevelDivision> divisions;
     Customer customer;
+    User activeUser;
 
+
+    /**
+     * Runs when the scene is loaded into the stage.
+     *
+     * Set up the nodes, click listeners, and any other necessary items to prepare the form for user use.
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
@@ -54,11 +76,14 @@ public class CustomerFormController implements Initializable, Controller, Form {
         initializeNodes();
         initializeClickListeners();
 
-        // Executes if user is updating/editing customer information
+        // Executes if user is updating/editing customer information instead of creating a new user
         if (DB.getActiveCustomer() != null) {
             customer = DB.getActiveCustomer();
             loadCustomerInfo(customer);
+        } else {
+            // TODO create user id and populate item
         }
+        activeUser = DB.getActiveUser();
     }
 
     /**
@@ -74,6 +99,10 @@ public class CustomerFormController implements Initializable, Controller, Form {
         divisions = firstLevelDivisionDAO.getAllDivisions();
     }
 
+
+    /**
+     * Additional setup for nodes that cannot be defined in the fxml.
+     */
     @Override
     public void initializeNodes() {
         for (Country country : countries) {
@@ -81,6 +110,9 @@ public class CustomerFormController implements Initializable, Controller, Form {
         }
     }
 
+    /**
+     * Set up the click listeners for the form.
+     */
     @Override
     public void initializeClickListeners() {
         countryComboBox.setOnAction(actionEvent -> {
@@ -93,7 +125,11 @@ public class CustomerFormController implements Initializable, Controller, Form {
             for (ValidationCode validationCode : formCodes) {
                 switch (validationCode) {
                     case OK -> {
-                        saveForm();
+                        try {
+                            saveForm();
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
                         return;
                     }
                     case NAME_ERR -> formErrors.add("Customer Name");
@@ -104,16 +140,25 @@ public class CustomerFormController implements Initializable, Controller, Form {
                     case FIRST_DIV_ERR -> formErrors.add("State/Province");
                 }
             }
-            StringBuilder errorMsg = new StringBuilder("Please correct errors in the following fields:\n");
+            StringBuilder errorMsg = new StringBuilder();
             // Adds each error to the error message string builder
             formErrors.forEach(err -> {
                 errorMsg.append(err);
                 errorMsg.append("\n");
             });
-            System.out.println(errorMsg);
-            // TODO: add error dialog
+
+            // Show errors in alert popup to user
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Form Error");
+            alert.setHeaderText("Please correct errors in the following fields:");
+            alert.setContentText(errorMsg.toString());
+            alert.showAndWait();
         });
 
+       cancelButton.setOnAction(actionEvent -> {
+           Stage stage = (Stage) nameInput.getScene().getWindow();
+           stage.close();
+       });
 
     }
 
@@ -126,11 +171,12 @@ public class CustomerFormController implements Initializable, Controller, Form {
         // Get the first level division object that matches the customers' division ID
         FirstLevelDivision customerDivision = divisions.stream()
                 .filter(d -> d.getDivisionId() == customer.getDivisionId()).toList().get(0);
-       // Get the customer country using the customers' first level division object
+        // Get the customer country using the customers' first level division object
         Country customerCountry = countries.stream()
                 .filter(c -> c.getCountryId() == customerDivision.getCountryId()).toList().get(0);
 
         // Fill the form fields and combo boxes
+        customerIdInput.setText(customer.getId().toString());
         nameInput.setText(customer.getName());
         addressInput.setText(customer.getAddress());
         postalCodeInput.setText(customer.getPostalCode());
@@ -141,7 +187,7 @@ public class CustomerFormController implements Initializable, Controller, Form {
     }
 
     /**
-     * Populates the first level division combo box based on the country parameter
+     * Populates the first level division combo box based on the country parameter.
      *
      * @param country the country that we want to see the first level divisions of in the combo box
      */
@@ -160,6 +206,11 @@ public class CustomerFormController implements Initializable, Controller, Form {
         }
     }
 
+    /**
+     * Check each form input for errors and return list of validation codes.
+     *
+     * @return List of validation codes
+     */
     // TODO: implement more robust error checking
     @Override
     public ArrayList<ValidationCode> validateForm() {
@@ -193,13 +244,28 @@ public class CustomerFormController implements Initializable, Controller, Form {
             returnCodes.add(ValidationCode.OK);
         }
 
-
-
         return returnCodes;
     }
 
     @Override
-    public void saveForm() {
+    public void saveForm() throws SQLException {
+        Integer i = 11;
+        DB.setActiveUser(null);
+        customerDAO = new CustomerDAOImpl();
+        customerDAO.insertCustomer(new Customer(
+                i,
+                nameInput.getText(),
+                addressInput.getText(),
+                postalCodeInput.getText(),
+                phoneNumberInput.getText(),
+                OffsetDateTime.now(ZoneOffset.UTC),
+                activeUser.getUserName(),
+                OffsetDateTime.now(ZoneOffset.UTC),
+                activeUser.getUserName(),
+                firstDivComboBox.getValue().getDivisionId()
+        ));
+
+
         Stage stage = (Stage) nameInput.getScene().getWindow();
         stage.close();
     }

@@ -2,6 +2,7 @@ package dev.sam.scheduler.dao;
 
 import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.helper.DateAndTimeHelper;
+import dev.sam.scheduler.helper.StringHelper;
 import dev.sam.scheduler.model.Customer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -54,22 +55,22 @@ public class CustomerDAOImpl implements CustomerDAO {
     public void insertCustomer(Customer customer) throws SQLException {
         DB.makeConnection();
         Statement stmt = DB.getConnection().createStatement();
-        stmt.executeUpdate(
-                "INSERT INTO customers" +
+        String sqlStatement = (
+                "INSERT INTO customers " +
                         "VALUES" +
                         "(" +
                         customer.getId() + "," +
-                        customer.getName() + "," +
-                        customer.getAddress() + "," +
-                        customer.getPostalCode() + "," +
-                        customer.getPhone() + "," +
-                        customer.getCreationDate() + "," +
-                        customer.getCreatedBy() + "," +
-                        customer.getLastUpdatedDate() + "," +
-                        customer.getLastUpdatedBy() + "," +
-                        customer.getDivisionId() + "," +
-                        ")"
-        );
+                        StringHelper.toStatementItem(customer.getName()) +
+                        StringHelper.toStatementItem(customer.getAddress()) +
+                        StringHelper.toStatementItem(customer.getPostalCode()) +
+                        StringHelper.toStatementItem(customer.getPhone()) +
+                        StringHelper.toStatementItem(DateAndTimeHelper.offsetDateTimeToDbStr(customer.getCreationDate())) +
+                        StringHelper.toStatementItem(customer.getCreatedBy()) +
+                        StringHelper.toStatementItem(DateAndTimeHelper.offsetDateTimeToDbStr(customer.getLastUpdatedDate())) +
+                        StringHelper.toStatementItem(customer.getLastUpdatedBy()) +
+                        customer.getDivisionId() +
+                        ")");
+        stmt.executeUpdate(sqlStatement);
         DB.closeConnection();
     }
 }
