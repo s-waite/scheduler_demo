@@ -6,6 +6,7 @@ import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.helper.DateAndTimeHelper;
 import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.Customer;
+import dev.sam.scheduler.model.SharedData;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -62,11 +63,13 @@ public class CustomerTableController implements Initializable, Controller {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        SharedData.INSTANCE.setCustomerTableController(this);
         customerDAO = new CustomerDAOImpl();
         initializeNodes();
         initializeClickListeners();
-        System.out.println(DB.getActiveUser());
     }
+
+    public void test() {};
 
     private void initializeTable() {
         try {
@@ -110,6 +113,10 @@ public class CustomerTableController implements Initializable, Controller {
         initializeTable();
     }
 
+    public void refreshTable() {
+        customerTableView.refresh();
+    }
+
     @Override
     public void initializeClickListeners() {
         newCustomerButton.setOnAction(actionEvent -> {
@@ -123,6 +130,7 @@ public class CustomerTableController implements Initializable, Controller {
                 throw new RuntimeException(e);
             }
         });
+
 
         updateCustomerButton.setOnAction(actionEvent -> {
             Stage newStage = new Stage();

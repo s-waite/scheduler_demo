@@ -4,11 +4,9 @@ import dev.sam.scheduler.dao.CountryDAOImpl;
 import dev.sam.scheduler.dao.CustomerDAOImpl;
 import dev.sam.scheduler.dao.FirstLevelDivisionDAOImpl;
 import dev.sam.scheduler.database.DB;
-import dev.sam.scheduler.model.Country;
-import dev.sam.scheduler.model.Customer;
-import dev.sam.scheduler.model.FirstLevelDivision;
-import dev.sam.scheduler.model.User;
+import dev.sam.scheduler.model.*;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -52,12 +50,14 @@ public class CustomerFormController implements Initializable, Controller, Form {
     ArrayList<FirstLevelDivision> divisions;
     Customer customer;
     User activeUser;
+    int maxCustomerId;
 
 
     /**
      * Runs when the scene is loaded into the stage.
-     *
+     * <p>
      * Set up the nodes, click listeners, and any other necessary items to prepare the form for user use.
+     *
      * @param url
      * @param resourceBundle
      */
@@ -73,13 +73,14 @@ public class CustomerFormController implements Initializable, Controller, Form {
         initializeClickListeners();
 
         // Executes if user is updating/editing customer information instead of creating a new user
+        // If creating a new user, finds the max customer ID in the database and load the next int into the customer ID field
         if (DB.getActiveCustomer() != null) {
             customer = DB.getActiveCustomer();
             loadCustomerInfo(customer);
         } else {
-            // TODO query database for highest customer id
             try {
-                System.out.println(customerDAO.getMaxCustomerId());
+                maxCustomerId = customerDAO.getMaxCustomerId();
+                customerIdInput.setText(String.valueOf(maxCustomerId + 1));
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -156,10 +157,10 @@ public class CustomerFormController implements Initializable, Controller, Form {
             alert.showAndWait();
         });
 
-       cancelButton.setOnAction(actionEvent -> {
-           Stage stage = (Stage) nameInput.getScene().getWindow();
-           stage.close();
-       });
+        cancelButton.setOnAction(actionEvent -> {
+            Stage stage = (Stage) nameInput.getScene().getWindow();
+            stage.close();
+        });
 
     }
 
@@ -250,21 +251,47 @@ public class CustomerFormController implements Initializable, Controller, Form {
 
     @Override
     public void saveForm() throws SQLException {
-        Integer i = 11;
-        DB.setActiveUser(null);
-        customerDAO.insertCustomer(new Customer(
-                i,
-                nameInput.getText(),
-                addressInput.getText(),
-                postalCodeInput.getText(),
-                phoneNumberInput.getText(),
-                OffsetDateTime.now(ZoneOffset.UTC),
-                activeUser.getUserName(),
-                OffsetDateTime.now(ZoneOffset.UTC),
-                activeUser.getUserName(),
-                firstDivComboBox.getValue().getDivisionId()
-        ));
+        Integer customerId = Integer.valueOf(customerIdInput.getText());
+        String customerName = nameInput.getText();
+        String address = addressInput.getText();
+        String postalCode = postalCodeInput.getText();
+        String phone = phoneNumberInput.getText();
+        OffsetDateTime creationDate = OffsetDateTime.now(ZoneOffset.UTC);
+        String createdBy = activeUser.getUserName();
+        OffsetDateTime modifyDate = OffsetDateTime.now(ZoneOffset.UTC);
+        String modifiedBy = activeUser.getUserName();
+        Integer firstDivId = firstDivComboBox.getValue().getDivisionId();
 
+        // TODO: distinguish between updating and creating new item
+        if (DB.getActiveCustomer() == null) {
+            Customer newCustomer = new Customer(
+                    customerId,
+                    customerName,
+                    address,
+                    postalCode,
+                    phone,
+                    creationDate,
+                    createdBy,
+                    modifyDate,
+                    modifiedBy,
+                    firstDivId
+            );
+            customerDAO.insertCustomer(newCustomer);
+        } else {
+            customer.setName(customerName);
+            customer.setAddress(address);
+            customer.setPostalCode(postalCode);
+            customer.setPhone(phone);
+            customer.setLastUpdatedDate(modifyDate);
+            customer.setLastUpdatedBy(activeUser.getUserName());
+            customer.setDivisionId(firstDivId);
+            customerDAO.updateCustomer(customer, DB.getActiveCustomer().getId());
+        }
+
+
+        CustomerTableController customerTableController = SharedData.INSTANCE.getCustomerTableController();
+        customerTableController.refreshTable();
+        // TODO: add some items in db class to shareddata
 
         Stage stage = (Stage) nameInput.getScene().getWindow();
         stage.close();

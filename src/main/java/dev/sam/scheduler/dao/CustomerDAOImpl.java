@@ -2,6 +2,7 @@ package dev.sam.scheduler.dao;
 
 import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.helper.DateAndTimeHelper;
+import dev.sam.scheduler.helper.SQLHelper;
 import dev.sam.scheduler.helper.StringHelper;
 import dev.sam.scheduler.model.Customer;
 import javafx.collections.FXCollections;
@@ -72,6 +73,31 @@ public class CustomerDAOImpl implements CustomerDAO {
                         ")");
         stmt.executeUpdate(sqlStatement);
         DB.closeConnection();
+    }
+
+    @Override
+    public void updateCustomer(Customer customer, Integer customerId) throws SQLException {
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        String sqlStatement = SQLHelper.updateStatement(
+                "customers",
+                "WHERE Customer_ID = " + customerId,
+                SQLHelper.makeSetString("Customer_Name", customer.getName()),
+                SQLHelper.makeSetString("Address", customer.getAddress()),
+                SQLHelper.makeSetString("Postal_Code", customer.getPostalCode()),
+                SQLHelper.makeSetString("Phone", customer.getPhone()),
+                SQLHelper.makeSetString("Last_Update", DateAndTimeHelper.offsetDateTimeToDbStr(customer.getLastUpdatedDate()))
+        );
+        System.out.println(sqlStatement);
+        stmt.executeUpdate(sqlStatement);
+
+
+
+//       String sqlStatment = (
+//               "UPDATE customers SET" +
+//                 "Customer_ID"
+//               )
+//
     }
 
     @Override

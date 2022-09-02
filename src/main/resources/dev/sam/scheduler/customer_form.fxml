@@ -17,7 +17,7 @@
                   <VBox layoutX="10.0" layoutY="107.0" spacing="2.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Customer ID" />
-                        <TextField fx:id="customerIdInput" editable="false" />
+                        <TextField fx:id="customerIdInput" disable="true" editable="false" />
                      </children>
                   </VBox>
                   <VBox spacing="2.0">
