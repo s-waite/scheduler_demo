@@ -22,6 +22,7 @@ public class StageHelper {
         ResourceBundle bundle = ResourceBundle.getBundle("dev.sam.scheduler.strings", LocalizationEnum.INSTANCE.getCurrentLocale());
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxmlResource), bundle);
         Scene scene = new Scene(fxmlLoader.load());
+        stage.centerOnScreen();
         stage.setScene(scene);
     }
 

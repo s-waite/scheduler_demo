@@ -2,6 +2,7 @@ package dev.sam.scheduler.dao;
 
 import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.model.Country;
+import dev.sam.scheduler.model.FirstLevelDivision;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,5 +24,20 @@ public class CountryDAOImpl implements CountryDAO {
             allCountries.add(new Country(countryId, countryName));
         }
         return allCountries;
+    }
+
+    @Override
+    public String getCountryNameFromDivisionId(int divisionId) throws SQLException {
+        String country = null;
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery(
+                "SELECT Country FROM client_schedule.countries" +
+                        " INNER JOIN first_level_divisions ON countries.Country_ID = first_level_divisions.COUNTRY_ID" +
+                        " WHERE Division_ID = " + divisionId);
+        while (rs.next()) {
+            country = rs.getString(1);
+        }
+        return country;
     }
 }

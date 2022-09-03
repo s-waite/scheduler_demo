@@ -1,8 +1,6 @@
 package dev.sam.scheduler.controller;
 
-import dev.sam.scheduler.dao.CountryDAOImpl;
 import dev.sam.scheduler.dao.CustomerDAOImpl;
-import dev.sam.scheduler.dao.FirstLevelDivisionDAOImpl;
 import dev.sam.scheduler.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -41,11 +39,7 @@ public class CustomerFormController implements Initializable, Controller, Form {
     @FXML
     private Button saveButton;
 
-    CountryDAOImpl countryDAO;
-    FirstLevelDivisionDAOImpl firstLevelDivisionDAO;
     CustomerDAOImpl customerDAO;
-    ArrayList<Country> countries;
-    ArrayList<FirstLevelDivision> divisions;
     Customer customer;
     int maxCustomerId;
 
@@ -61,11 +55,6 @@ public class CustomerFormController implements Initializable, Controller, Form {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         customerDAO = new CustomerDAOImpl();
-        try {
-            queryStaticDbData();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
         initializeNodes();
         initializeClickListeners();
 
@@ -85,25 +74,11 @@ public class CustomerFormController implements Initializable, Controller, Form {
     }
 
     /**
-     * This method gets the first level division and country data from the database
-     *
-     * @throws SQLException
-     */
-    private void queryStaticDbData() throws SQLException {
-        countryDAO = new CountryDAOImpl();
-        firstLevelDivisionDAO = new FirstLevelDivisionDAOImpl();
-
-        countries = countryDAO.getAllCountries();
-        divisions = firstLevelDivisionDAO.getAllDivisions();
-    }
-
-
-    /**
      * Additional setup for nodes that cannot be defined in the fxml.
      */
     @Override
     public void initializeNodes() {
-        for (Country country : countries) {
+        for (Country country : SharedData.INSTANCE.getCountries()) {
             countryComboBox.getItems().add(country);
         }
     }
@@ -167,10 +142,10 @@ public class CustomerFormController implements Initializable, Controller, Form {
      */
     private void loadCustomerInfo(Customer customer) {
         // Get the first level division object that matches the customers' division ID
-        FirstLevelDivision customerDivision = divisions.stream()
+        FirstLevelDivision customerDivision = SharedData.INSTANCE.getFirstLevelDivisions().stream()
                 .filter(d -> d.getDivisionId() == customer.getDivisionId()).toList().get(0);
         // Get the customer country using the customers' first level division object
-        Country customerCountry = countries.stream()
+        Country customerCountry = SharedData.INSTANCE.getCountries().stream()
                 .filter(c -> c.getCountryId() == customerDivision.getCountryId()).toList().get(0);
 
         // Fill the form fields and combo boxes
@@ -197,7 +172,7 @@ public class CustomerFormController implements Initializable, Controller, Form {
         firstDivComboBox.getItems().clear();
 
         // Populate the combo box division list
-        for (FirstLevelDivision division : divisions) {
+        for (FirstLevelDivision division : SharedData.INSTANCE.getFirstLevelDivisions()) {
             if (division.getCountryId() == countryId) {
                 firstDivComboBox.getItems().add(division);
             }
@@ -289,12 +264,11 @@ public class CustomerFormController implements Initializable, Controller, Form {
 
         CustomerTableController customerTableController = SharedData.INSTANCE.getCustomerTableController();
         customerTableController.refreshTable();
-        // TODO: add some items in db class to shareddata
+
+        // Active customer is not null since are finished editing it
+        SharedData.INSTANCE.setActiveCustomer(null);
 
         Stage stage = (Stage) nameInput.getScene().getWindow();
         stage.close();
     }
-
-    // TODO: save method
-    // TODO: input validation
 }

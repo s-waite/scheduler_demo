@@ -5,6 +5,7 @@ import dev.sam.scheduler.helper.DateAndTimeHelper;
 import dev.sam.scheduler.helper.SQLHelper;
 import dev.sam.scheduler.helper.StringHelper;
 import dev.sam.scheduler.model.Customer;
+import dev.sam.scheduler.model.SharedData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -86,18 +87,22 @@ public class CustomerDAOImpl implements CustomerDAO {
                 SQLHelper.makeSetString("Address", customer.getAddress()),
                 SQLHelper.makeSetString("Postal_Code", customer.getPostalCode()),
                 SQLHelper.makeSetString("Phone", customer.getPhone()),
-                SQLHelper.makeSetString("Last_Update", DateAndTimeHelper.offsetDateTimeToDbStr(customer.getLastUpdatedDate()))
+                SQLHelper.makeSetString("Last_Update", DateAndTimeHelper.offsetDateTimeToDbStr(customer.getLastUpdatedDate())),
+                SQLHelper.makeSetString("Last_Updated_By", SharedData.INSTANCE.getActiveUser().getUserName()),
+                SQLHelper.makeSetString("Division_ID", customer.getDivisionId())
         );
         System.out.println(sqlStatement);
         stmt.executeUpdate(sqlStatement);
+        DB.closeConnection();
+    }
 
+    @Override
+    public void deleteCustomer(Customer customer) throws SQLException {
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        stmt.executeUpdate("DELETE FROM customers WHERE Customer_ID = " + customer.getId());
+        DB.closeConnection();
 
-
-//       String sqlStatment = (
-//               "UPDATE customers SET" +
-//                 "Customer_ID"
-//               )
-//
     }
 
     @Override
@@ -107,7 +112,7 @@ public class CustomerDAOImpl implements CustomerDAO {
         ResultSet rs = stmt.executeQuery("SELECT MAX(Customer_ID) FROM Customers");
         int maxId = 0;
         while (rs.next()) {
-             maxId = rs.getInt(1);
+            maxId = rs.getInt(1);
         }
         return maxId;
     }

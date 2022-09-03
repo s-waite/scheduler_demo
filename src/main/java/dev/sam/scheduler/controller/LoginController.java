@@ -9,6 +9,7 @@ import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.LocalizationEnum;
 import dev.sam.scheduler.model.SharedData;
 import dev.sam.scheduler.model.User;
+import dev.sam.scheduler.model.WindowSizes;
 import dev.sam.scheduler.view.FlagButton;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -83,6 +84,8 @@ public class LoginController implements Initializable, Controller {
         loginButton.setOnAction(actionEvent -> {
             if (isValidLogin()) {
                 try {
+                    stage.setWidth(WindowSizes.WIDTH_LARGE.getSize());
+                    stage.setHeight(WindowSizes.HEIGHT_MED.getSize());
                     StageHelper.loadSceneIntoStage(stage, "main_tab_view.fxml");
                 } catch (IOException e) {
                     throw new RuntimeException(e);

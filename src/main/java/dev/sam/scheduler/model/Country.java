@@ -12,7 +12,7 @@ public class Country {
     // Used in the customer form combo box
     @Override
     public String toString() {
-       return this.countryName;
+        return this.countryName;
     }
 
     public int getCountryId() {
@@ -21,5 +21,12 @@ public class Country {
 
     public String getCountryName() {
         return countryName;
+    }
+
+    public static Country getCountryFromDivisionId(int divisionId) {
+        FirstLevelDivision division = SharedData.INSTANCE.getFirstLevelDivisions().stream()
+                .filter(fld -> fld.getDivisionId() == divisionId).toList().get(0);
+        return SharedData.INSTANCE.getCountries().stream()
+                .filter(c -> c.getCountryId() == division.getCountryId()).toList().get(0);
     }
 }

@@ -9,5 +9,6 @@ public interface CustomerDAO {
     ObservableList<Customer> getAllCustomers() throws SQLException;
     void insertCustomer(Customer customer) throws SQLException;
     void updateCustomer(Customer customer, Integer customerId) throws SQLException;
+    void deleteCustomer(Customer customer) throws SQLException;
     int getMaxCustomerId() throws SQLException;
 }
