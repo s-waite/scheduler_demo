@@ -3,8 +3,7 @@ package dev.sam.scheduler.controller;
 import dev.sam.scheduler.App;
 import dev.sam.scheduler.dao.CustomerDAO;
 import dev.sam.scheduler.dao.CustomerDAOImpl;
-import dev.sam.scheduler.dao.UserDAOImpl;
-import dev.sam.scheduler.database.DB;
+import dev.sam.scheduler.dao.UserDAO;
 import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.LocalizationEnum;
 import dev.sam.scheduler.model.SharedData;
@@ -39,12 +38,12 @@ public class LoginController implements Initializable, Controller {
     @FXML
     private PasswordField passwordField;
     private Stage stage;
-    private UserDAOImpl userDAO;
+    private UserDAO userDAO;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        userDAO = new UserDAOImpl();
+        userDAO = new UserDAO();
         stage = App.getStage();
         initializeNodes();
         initializeClickListeners();
@@ -109,7 +108,7 @@ public class LoginController implements Initializable, Controller {
         }
 
         try {
-            for (User user : userDAO.getAllUsers()) {
+            for (User user : userDAO.getAll()) {
                 if (user.getUserName().equals(userNameInput) && user.getPassword().equals(passwordInput)) {
                     SharedData.INSTANCE.setActiveUser(user);
                     return true;

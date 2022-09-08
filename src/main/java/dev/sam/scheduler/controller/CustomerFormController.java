@@ -185,7 +185,7 @@ public class CustomerFormController implements Initializable, Controller, Form {
      * @return List of validation codes
      */
     // TODO: implement more robust error checking
-    // TODO: add check to see if customer has any appointments
+    // TODO: refactor to extend from form class
     @Override
     public ArrayList<ValidationCode> validateForm() {
 

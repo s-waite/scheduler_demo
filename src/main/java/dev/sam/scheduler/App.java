@@ -1,7 +1,5 @@
 package dev.sam.scheduler;
 
-import dev.sam.scheduler.dao.UserDAO;
-import dev.sam.scheduler.dao.UserDAOImpl;
 import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.LocalizationEnum;
 import dev.sam.scheduler.model.WindowSizes;

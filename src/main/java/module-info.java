@@ -10,4 +10,8 @@ module dev.sam.scheduler {
     exports dev.sam.scheduler.controller;
     opens dev.sam.scheduler.view to javafx.fxml;
     exports dev.sam.scheduler.view;
+    opens dev.sam.scheduler.dao to javafx.fxml;
+    exports dev.sam.scheduler.dao;
+    opens dev.sam.scheduler.model to javafx.fxml;
+    exports dev.sam.scheduler.model;
 }

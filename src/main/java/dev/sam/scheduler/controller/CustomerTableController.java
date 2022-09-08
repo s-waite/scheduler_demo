@@ -3,11 +3,9 @@ package dev.sam.scheduler.controller;
 import dev.sam.scheduler.dao.*;
 import dev.sam.scheduler.helper.DateAndTimeHelper;
 import dev.sam.scheduler.helper.StageHelper;
-import dev.sam.scheduler.model.Country;
-import dev.sam.scheduler.model.Customer;
-import dev.sam.scheduler.model.FirstLevelDivision;
-import dev.sam.scheduler.model.SharedData;
+import dev.sam.scheduler.model.*;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -20,6 +18,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+// TODO: refactor to extend from table class
 public class CustomerTableController implements Initializable, Controller {
 
     @FXML
@@ -30,6 +29,9 @@ public class CustomerTableController implements Initializable, Controller {
 
     @FXML
     private Button newCustomerButton;
+
+    @FXML
+    private Button viewCustomerAppointmentsButton;
 
     @FXML
     private TableColumn<Customer, String> countryColumn;
@@ -71,7 +73,7 @@ public class CustomerTableController implements Initializable, Controller {
         SharedData.INSTANCE.setCustomerTableController(this);
         customerDAO = new CustomerDAOImpl();
         countryDAO = new CountryDAOImpl();
-        appointmentDAO = new AppointmentDAOImpl();
+        appointmentDAO = new AppointmentDAO();
         initializeNodes();
         initializeClickListeners();
     }
@@ -219,6 +221,23 @@ public class CustomerTableController implements Initializable, Controller {
             assignedAppointmentsAlert.setContentText(appointmentErrors.toString());
             assignedAppointmentsAlert.showAndWait();
             refreshTable();
+        });
+
+        viewCustomerAppointmentsButton.setOnAction(actionEvent -> {
+            List<Customer> selectedCustomers = customerTableView.getSelectionModel().getSelectedItems();
+            // Validate exactly one customer is selected
+            if (selectedCustomers.size() != 1) {
+                Alert incorrectSelectionAlert = new Alert(Alert.AlertType.ERROR);
+                incorrectSelectionAlert.setHeaderText("Please select exactly one customer");
+                incorrectSelectionAlert.showAndWait();
+                return;
+            }
+
+            // Whenever the appointment table tab is opened, it is filtered based on the active customer (or not filtered if there is none)
+            // Setting the active customer lets the appointment table know that we are filtering for a customer
+            SharedData.INSTANCE.setActiveCustomer(selectedCustomers.get(0));
+            TabPane tabPane = SharedData.INSTANCE.getMainTabPane();
+            tabPane.getSelectionModel().select(1);
         });
 
     }

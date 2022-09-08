@@ -27,6 +27,7 @@
             </TableView>
             <HBox alignment="CENTER_RIGHT" fillHeight="false" spacing="20.0">
                <children>
+                  <Button fx:id="viewCustomerAppointmentsButton" layoutX="693.0" layoutY="10.0" mnemonicParsing="false" text="View Selected Customer Appointments" />
                   <Button fx:id="newCustomerButton" mnemonicParsing="false" text="New Customer" />
                   <Button fx:id="deleteCustomerButton" mnemonicParsing="false" text="Delete Customer" />
                   <Button fx:id="updateCustomerButton" mnemonicParsing="false" text="Update Customer" />

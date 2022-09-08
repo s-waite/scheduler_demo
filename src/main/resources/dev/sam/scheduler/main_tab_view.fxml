@@ -4,16 +4,23 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<TabPane fx:id="tabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.sam.scheduler.controller.MainTabViewController">
   <tabs>
-    <Tab text="Customers">
+    <Tab fx:id="customerTab" text="Customers">
       <content>
         <AnchorPane minHeight="200.0" minWidth="400.0" prefHeight="1000.0" prefWidth="1000.0">
                <children>
-                   <fx:include source="customer_table_view.fxml" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                   <fx:include source="customer_table.fxml" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children></AnchorPane>
       </content>
     </Tab>
-    <Tab text="Untitled Tab 2" />
+    <Tab fx:id="appointmentTab" text="Appointments">
+      <content>
+          <AnchorPane minHeight="200.0" minWidth="400.0" prefHeight="1000.0" prefWidth="1000.0">
+              <children>
+                  <fx:include source="appointment_table.fxml" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+              </children></AnchorPane>
+      </content>
+    </Tab>
   </tabs>
 </TabPane>
