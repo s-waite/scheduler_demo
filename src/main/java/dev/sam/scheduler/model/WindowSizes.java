@@ -1,7 +1,7 @@
 package dev.sam.scheduler.model;
 
 public enum WindowSizes {
-    WIDTH_LARGE(1000),
+    WIDTH_LARGE(1200),
     WIDTH_MED(800),
     WIDTH_SMALL(600),
     HEIGHT_LARGE(800),

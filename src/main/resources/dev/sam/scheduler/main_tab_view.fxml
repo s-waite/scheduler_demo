@@ -8,7 +8,7 @@
   <tabs>
     <Tab text="Customers">
       <content>
-        <AnchorPane maxHeight="1000.0" maxWidth="1000.0" minHeight="200.0" minWidth="400.0" prefHeight="1000.0" prefWidth="1000.0">
+        <AnchorPane minHeight="200.0" minWidth="400.0" prefHeight="1000.0" prefWidth="1000.0">
                <children>
                    <fx:include source="customer_table_view.fxml" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children></AnchorPane>

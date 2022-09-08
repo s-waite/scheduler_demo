@@ -28,4 +28,10 @@ public class FirstLevelDivision {
     public int getCountryId() {
         return countryId;
     }
+
+    public static FirstLevelDivision getDivisionFromId(int divisionId) {
+        return SharedData.INSTANCE.getFirstLevelDivisions().stream()
+                .filter(fld -> fld.getDivisionId() == divisionId).toList().get(0);
+    }
+
 }

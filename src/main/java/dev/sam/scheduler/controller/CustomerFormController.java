@@ -185,8 +185,10 @@ public class CustomerFormController implements Initializable, Controller, Form {
      * @return List of validation codes
      */
     // TODO: implement more robust error checking
+    // TODO: add check to see if customer has any appointments
     @Override
     public ArrayList<ValidationCode> validateForm() {
+
         ArrayList<ValidationCode> returnCodes = new ArrayList<>();
         if (nameInput.getText().isBlank()) {
             returnCodes.add(ValidationCode.NAME_ERR);
@@ -235,7 +237,6 @@ public class CustomerFormController implements Initializable, Controller, Form {
         String modifiedBy = activeUser.getUserName();
         Integer firstDivId = firstDivComboBox.getValue().getDivisionId();
 
-        // TODO: distinguish between updating and creating new item
         if (SharedData.INSTANCE.getActiveCustomer() == null) {
             Customer newCustomer = new Customer(
                     customerId,

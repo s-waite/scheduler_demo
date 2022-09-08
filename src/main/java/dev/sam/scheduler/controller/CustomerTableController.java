@@ -1,13 +1,11 @@
 package dev.sam.scheduler.controller;
 
-import dev.sam.scheduler.dao.CountryDAO;
-import dev.sam.scheduler.dao.CountryDAOImpl;
-import dev.sam.scheduler.dao.CustomerDAO;
-import dev.sam.scheduler.dao.CustomerDAOImpl;
+import dev.sam.scheduler.dao.*;
 import dev.sam.scheduler.helper.DateAndTimeHelper;
 import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.Country;
 import dev.sam.scheduler.model.Customer;
+import dev.sam.scheduler.model.FirstLevelDivision;
 import dev.sam.scheduler.model.SharedData;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXML;
@@ -37,6 +35,9 @@ public class CustomerTableController implements Initializable, Controller {
     private TableColumn<Customer, String> countryColumn;
 
     @FXML
+    TableColumn<Customer, String> firstDivisionNameColumn;
+
+    @FXML
     private TableColumn<Customer, String> addressColumn;
 
     @FXML
@@ -62,6 +63,7 @@ public class CustomerTableController implements Initializable, Controller {
 
     CustomerDAO customerDAO;
     CountryDAO countryDAO;
+    AppointmentDAO appointmentDAO;
 
 
     @Override
@@ -69,14 +71,10 @@ public class CustomerTableController implements Initializable, Controller {
         SharedData.INSTANCE.setCustomerTableController(this);
         customerDAO = new CustomerDAOImpl();
         countryDAO = new CountryDAOImpl();
+        appointmentDAO = new AppointmentDAOImpl();
         initializeNodes();
         initializeClickListeners();
     }
-
-    public void test() {
-    }
-
-    ;
 
     private void initializeTable() {
         customerTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -90,6 +88,11 @@ public class CustomerTableController implements Initializable, Controller {
             int divisionId = cellData.getValue().getDivisionId();
             Country country = Country.getCountryFromDivisionId(divisionId);
             return new ReadOnlyObjectWrapper<>(country.getCountryName());
+        });
+
+        firstDivisionNameColumn.setCellValueFactory(cellData -> {
+            FirstLevelDivision division = FirstLevelDivision.getDivisionFromId(cellData.getValue().getDivisionId());
+            return new ReadOnlyObjectWrapper<>(division.getDivision());
         });
 
         customerIdColumn.setCellValueFactory(cellData -> {
@@ -178,13 +181,43 @@ public class CustomerTableController implements Initializable, Controller {
 
         deleteCustomerButton.setOnAction(actionEvent -> {
             List<Customer> selectedCustomers = customerTableView.getSelectionModel().getSelectedItems();
+            StringBuilder appointmentErrors = new StringBuilder();
             selectedCustomers.forEach(customer -> {
+                try {
+                    int numOfCustomerAppointments = appointmentDAO.getNumberOfAppointmentsFromCustomerId(customer.getId());
+                    if (numOfCustomerAppointments > 0) {
+                        appointmentErrors
+                                .append(customer.getName())
+                                .append(" has ")
+                                .append(numOfCustomerAppointments);
+                    }
+                    if (numOfCustomerAppointments == 1) {
+                        appointmentErrors
+                                .append(" appointment")
+                                .append("\n");
+                        return;
+                    } else if (numOfCustomerAppointments > 1) {
+                        appointmentErrors
+                                .append(" appointments")
+                                .append("\n");
+                        return;
+                    }
+
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+
                 try {
                     customerDAO.deleteCustomer(customer);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
             });
+
+            Alert assignedAppointmentsAlert = new Alert(Alert.AlertType.ERROR);
+            assignedAppointmentsAlert.setHeaderText("Some customers could not be deleted because they have associated appointments");
+            assignedAppointmentsAlert.setContentText(appointmentErrors.toString());
+            assignedAppointmentsAlert.showAndWait();
             refreshTable();
         });
 
