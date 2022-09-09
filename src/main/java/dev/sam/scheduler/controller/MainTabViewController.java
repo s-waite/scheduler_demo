@@ -25,18 +25,18 @@ public class MainTabViewController implements Initializable {
         CustomerTableController customerTableController = SharedData.INSTANCE.getCustomerTableController();
         AppointmentTableController appointmentTableController = SharedData.INSTANCE.getAppointmentTableController();
 
-        // When the tab is switched to the customer table, set the active customer to null since there should be no
-        // active customers when we are viewing the customer table
+        /**
+         * This listener is called when the tab is changed.
+         *
+         * Calls the function in the controller that is designated to execute when the tab is changed
+         */
         customerTab.setOnSelectionChanged(event -> {
             // Fires when the customer tab is selected
             if (customerTab.isSelected()) {
-                // If the use selects the customer tab, we know there is no active customer
-                System.out.println("customer");
-                SharedData.INSTANCE.setActiveCustomer(null);
+               customerTableController.onThisTabSelected();
             }
         });
 
-        // If the tab is switched to appointments and there is an active customer, filter the appointment table by that customer
         appointmentTab.setOnSelectionChanged(event -> {
             if (appointmentTab.isSelected()) {
                 appointmentTableController.onThisTabSelected();

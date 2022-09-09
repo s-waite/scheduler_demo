@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 // TODO: refactor to extend from table class
-public class CustomerTableController implements Initializable, Controller {
+public class CustomerTableController extends Table implements Initializable, Controller, Tab {
 
     @FXML
     private Button updateCustomerButton;
@@ -68,6 +68,7 @@ public class CustomerTableController implements Initializable, Controller {
     AppointmentDAO appointmentDAO;
 
 
+    // TODO refactor to inherit from table and extend tab
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         SharedData.INSTANCE.setCustomerTableController(this);
@@ -242,4 +243,8 @@ public class CustomerTableController implements Initializable, Controller {
 
     }
 
+    @Override
+    public void onThisTabSelected() {
+        SharedData.INSTANCE.setActiveCustomer(null);
+    }
 }
