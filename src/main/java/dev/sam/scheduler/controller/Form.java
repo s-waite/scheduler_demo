@@ -17,6 +17,4 @@ public abstract class Form {
     abstract ArrayList<ValidationCode> validateForm();
 
     abstract void saveForm() throws SQLException;
-
-
 }
