@@ -111,6 +111,10 @@ public class AppointmentTableController extends Table implements Controller, Tab
             filterTable(Filter.MONTH);
         });
 
+        resetCustomerButton.setOnAction(actionEvent -> {
+            SharedData.INSTANCE.setActiveCustomer(null);
+            onThisTabSelected();
+        });
     }
 
     /**
@@ -183,6 +187,7 @@ public class AppointmentTableController extends Table implements Controller, Tab
      */
     @Override
     public void onThisTabSelected() {
+        allRadio.setSelected(true);
         Customer activeCustomer = SharedData.INSTANCE.getActiveCustomer();
         if (activeCustomer != null) {
             appointmentsForText.setText(appointmentsForTextPrompt + " " + activeCustomer.getName());

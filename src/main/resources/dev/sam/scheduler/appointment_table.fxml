@@ -17,13 +17,18 @@
          <children>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                  <HBox alignment="CENTER_LEFT" fillHeight="false" HBox.hgrow="ALWAYS">
                      <children>
-                        <Text fx:id="appointmentsForText" strokeType="OUTSIDE" strokeWidth="0.0" text="Viewing Appointments For: ">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Text>
+                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                           <children>
+                              <Text fx:id="appointmentsForText" strokeType="OUTSIDE" strokeWidth="0.0" text="Viewing Appointments For: ">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </Text>
+                              <Button fx:id="resetCustomerButton" mnemonicParsing="false" text="Clear" />
+                           </children>
+                        </VBox>
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="20.0" HBox.hgrow="ALWAYS">
