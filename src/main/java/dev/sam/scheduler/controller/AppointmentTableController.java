@@ -13,17 +13,13 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -75,11 +71,16 @@ public class AppointmentTableController extends Table implements Controller, Tab
     private RadioButton currentWeekRadio;
 
     @FXML
+    private Button resetCustomerButton;
+
+    @FXML
     private Text appointmentsForText;
     String appointmentsForTextPrompt;
 
     ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
     FilteredList<Appointment> appointmentFilteredList;
+
+    enum Filter {ALL, WEEK, MONTH}
 
     /**
      * Set up the nodes for the scene, including the table
@@ -185,54 +186,51 @@ public class AppointmentTableController extends Table implements Controller, Tab
         Customer activeCustomer = SharedData.INSTANCE.getActiveCustomer();
         if (activeCustomer != null) {
             appointmentsForText.setText(appointmentsForTextPrompt + " " + activeCustomer.getName());
-            filterTable(activeCustomer);
+            filterTable(Filter.ALL);
         } else {
             appointmentsForText.setText(appointmentsForTextPrompt + " Everyone");
             refreshTable(false);
         }
     }
 
-    enum Filter {
-        ALL, WEEK, MONTH
-    }
-
     /**
-     * Filters the appointment table
-     * <p>
-     * If a Customer object is passed, filters for appointments of that customer
+     * Filter the table based on the Filter enum.
      *
-     * @param t   The object passed
-     * @param <T> The type parameter
+     * @param filter The filter enum
      */
-    private <T> void filterTable(T t) {
-        if (!(t instanceof Customer || t instanceof Filter)) {
-            throw new IllegalArgumentException();
-        }
-
-        if (t instanceof Customer) {
-            appointmentFilteredList.setPredicate(a -> a.getCustomerId() == ((Customer) t).getId());
-            return;
-        }
-
-        if (SharedData.INSTANCE.getActiveCustomer() == null) {
-            Filter filter = (Filter) t;
-            switch (filter) {
-                case ALL -> appointmentFilteredList.setPredicate(appointment -> {
-                    if ()
-                });
-                case WEEK -> appointmentFilteredList.setPredicate(appointment -> {
-                    OffsetDateTime currentTime = OffsetDateTime.now(ZoneId.of("+0"));
-                    OffsetDateTime startTime = appointment.getStartDateTime();
-                    OffsetDateTime weekFromNow = currentTime.plusWeeks(1);
-                    return (startTime.isBefore(weekFromNow) && startTime.isAfter(currentTime));
-                });
-                case MONTH -> appointmentFilteredList.setPredicate(appointment -> {
-                    OffsetDateTime currentTime = OffsetDateTime.now(ZoneId.of("+0"));
-                    OffsetDateTime startTime = appointment.getStartDateTime();
-                    OffsetDateTime monthFromNow = currentTime.plusMonths(1);
-                    return (startTime.isBefore(monthFromNow) && startTime.isAfter(currentTime));
-                });
-            }
+    private void filterTable(Filter filter) {
+        Customer customer = SharedData.INSTANCE.getActiveCustomer();
+        switch (filter) {
+            case ALL -> appointmentFilteredList.setPredicate(appointment -> {
+                if (customer != null) {
+                    return appointment.getCustomerId() == customer.getId();
+                }
+                return true;
+            });
+            case WEEK -> appointmentFilteredList.setPredicate(appointment -> {
+                OffsetDateTime currentTime = OffsetDateTime.now(ZoneId.of("+0"));
+                OffsetDateTime startTime = appointment.getStartDateTime();
+                OffsetDateTime weekFromNow = currentTime.plusWeeks(1);
+                if (startTime.isBefore(weekFromNow) && startTime.isAfter(currentTime)) {
+                    if (customer != null) {
+                        return (customer.getId() == appointment.getCustomerId());
+                    }
+                    return true;
+                }
+                return false;
+            });
+            case MONTH -> appointmentFilteredList.setPredicate(appointment -> {
+                OffsetDateTime currentTime = OffsetDateTime.now(ZoneId.of("+0"));
+                OffsetDateTime startTime = appointment.getStartDateTime();
+                OffsetDateTime monthFromNow = currentTime.plusMonths(1);
+                if (startTime.isBefore(monthFromNow) && startTime.isAfter(currentTime)) {
+                    if (customer != null) {
+                        return (customer.getId() == appointment.getCustomerId());
+                    }
+                    return true;
+                }
+                return false;
+            });
         }
     }
 
