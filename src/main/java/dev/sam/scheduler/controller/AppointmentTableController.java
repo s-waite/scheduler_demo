@@ -13,12 +13,17 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -61,6 +66,15 @@ public class AppointmentTableController extends Table implements Controller, Tab
     private TableColumn<Appointment, Integer> userIdColumn;
 
     @FXML
+    private RadioButton allRadio;
+
+    @FXML
+    private RadioButton currentMonthRadio;
+
+    @FXML
+    private RadioButton currentWeekRadio;
+
+    @FXML
     private Text appointmentsForText;
     String appointmentsForTextPrompt;
 
@@ -73,6 +87,10 @@ public class AppointmentTableController extends Table implements Controller, Tab
     @Override
     public void initializeNodes() {
         initializeTable(appointmentTable, appointmentFilteredList);
+        final ToggleGroup filterToggleGroup = new ToggleGroup();
+        allRadio.setToggleGroup(filterToggleGroup);
+        currentMonthRadio.setToggleGroup(filterToggleGroup);
+        currentWeekRadio.setToggleGroup(filterToggleGroup);
     }
 
     /**
@@ -80,6 +98,17 @@ public class AppointmentTableController extends Table implements Controller, Tab
      */
     @Override
     public void initializeClickListeners() {
+        allRadio.setOnAction(actionEvent -> {
+            filterTable(Filter.ALL);
+        });
+
+        currentWeekRadio.setOnAction(actionEvent -> {
+            filterTable(Filter.WEEK);
+        });
+
+        currentMonthRadio.setOnAction(actionEvent -> {
+            filterTable(Filter.MONTH);
+        });
 
     }
 
@@ -156,27 +185,63 @@ public class AppointmentTableController extends Table implements Controller, Tab
         Customer activeCustomer = SharedData.INSTANCE.getActiveCustomer();
         if (activeCustomer != null) {
             appointmentsForText.setText(appointmentsForTextPrompt + " " + activeCustomer.getName());
-            filterTableForCustomer(activeCustomer);
+            filterTable(activeCustomer);
         } else {
             appointmentsForText.setText(appointmentsForTextPrompt + " Everyone");
             refreshTable(false);
         }
     }
 
+    enum Filter {
+        ALL, WEEK, MONTH
+    }
+
     /**
-     * Filter the table items to only show appointments for a certain customer.
+     * Filters the appointment table
+     * <p>
+     * If a Customer object is passed, filters for appointments of that customer
      *
-     * @param customer The customer to show appointments for
+     * @param t   The object passed
+     * @param <T> The type parameter
      */
-    private void filterTableForCustomer(Customer customer) {
-        appointmentFilteredList.setPredicate(a -> a.getCustomerId() == customer.getId());
+    private <T> void filterTable(T t) {
+        if (!(t instanceof Customer || t instanceof Filter)) {
+            throw new IllegalArgumentException();
+        }
+
+        if (t instanceof Customer) {
+            appointmentFilteredList.setPredicate(a -> a.getCustomerId() == ((Customer) t).getId());
+            return;
+        }
+
+        if (SharedData.INSTANCE.getActiveCustomer() == null) {
+            Filter filter = (Filter) t;
+            switch (filter) {
+                case ALL -> appointmentFilteredList.setPredicate(appointment -> {
+                    if ()
+                });
+                case WEEK -> appointmentFilteredList.setPredicate(appointment -> {
+                    OffsetDateTime currentTime = OffsetDateTime.now(ZoneId.of("+0"));
+                    OffsetDateTime startTime = appointment.getStartDateTime();
+                    OffsetDateTime weekFromNow = currentTime.plusWeeks(1);
+                    return (startTime.isBefore(weekFromNow) && startTime.isAfter(currentTime));
+                });
+                case MONTH -> appointmentFilteredList.setPredicate(appointment -> {
+                    OffsetDateTime currentTime = OffsetDateTime.now(ZoneId.of("+0"));
+                    OffsetDateTime startTime = appointment.getStartDateTime();
+                    OffsetDateTime monthFromNow = currentTime.plusMonths(1);
+                    return (startTime.isBefore(monthFromNow) && startTime.isAfter(currentTime));
+                });
+            }
+        }
     }
 
 
     /**
      * Resets the table filter to show all items.
-     *
+     * <p>
      * If a new appointment was just added to the database, refreshes the table so that new appointment shows up.
+     *
      * @param newItemWasAddedToDb True if a new appointment was just added to the database
      */
     public void refreshTable(boolean newItemWasAddedToDb) {
@@ -185,6 +250,7 @@ public class AppointmentTableController extends Table implements Controller, Tab
 
     /**
      * This function is called after the root elements of the scene has been processed, and sets up the scene when it is loaded
+     *
      * @param url
      * @param resourceBundle
      */
@@ -201,5 +267,6 @@ public class AppointmentTableController extends Table implements Controller, Tab
         }
         appointmentsForTextPrompt = appointmentsForText.getText();
         initializeNodes();
+        initializeClickListeners();
     }
 }
