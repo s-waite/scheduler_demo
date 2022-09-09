@@ -3,7 +3,7 @@ package dev.sam.scheduler.controller;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public interface Form {
+public abstract class Form {
     enum ValidationCode {
         NAME_ERR,
         ADDRESS_ERR,
@@ -14,9 +14,9 @@ public interface Form {
         OK
     }
 
-    ArrayList<ValidationCode> validateForm();
+    abstract ArrayList<ValidationCode> validateForm();
 
-    void saveForm() throws SQLException;
+    abstract void saveForm() throws SQLException;
 
 
 }

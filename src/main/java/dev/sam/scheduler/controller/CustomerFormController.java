@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class CustomerFormController implements Initializable, Controller, Form {
+public class CustomerFormController extends Form implements Initializable, Controller  {
 
     @FXML
     private TextField addressInput;
