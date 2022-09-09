@@ -10,10 +10,12 @@ import dev.sam.scheduler.model.SharedData;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -55,7 +57,12 @@ public class AppointmentTableController extends Table implements Controller, Tab
     @FXML
     private TableColumn<Appointment, Integer> userIdColumn;
 
+    @FXML
+    private Text appointmentsForText;
+    String appointmentsForTextPrompt;
+
     ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
+    FilteredList<Appointment> appointmentFilteredList;
 
     @Override
     public void initializeNodes() {
@@ -70,7 +77,9 @@ public class AppointmentTableController extends Table implements Controller, Tab
     @Override
     <T> void initializeTable(TableView<T> tableView, List<T> tableItems) {
         super.initializeTable(tableView, tableItems);
+
         ContactDAO contactDAO = new ContactDAO();
+
         appointmentIdColumn.setCellValueFactory(cellData -> {
             return new ReadOnlyObjectWrapper<>(cellData.getValue().getId());
         });
@@ -122,27 +131,22 @@ public class AppointmentTableController extends Table implements Controller, Tab
     public void onThisTabSelected() {
         Customer activeCustomer = SharedData.INSTANCE.getActiveCustomer();
         if (activeCustomer != null) {
-           filterTableForCustomer(activeCustomer);
+            appointmentsForText.setText(appointmentsForTextPrompt + " " + activeCustomer.getName());
+            filterTableForCustomer(activeCustomer);
         } else {
+            appointmentsForText.setText(appointmentsForTextPrompt + " Everyone");
             refreshTable(false);
         }
     }
 
     private void filterTableForCustomer(Customer customer) {
-        ObservableList<Appointment> customerAppointments = FXCollections.observableArrayList();
-        ObservableList<Appointment> tableAppointments = appointmentTable.getItems();
-        int customerId = customer.getId();
-        for (Appointment appointment : tableAppointments) {
-            if (appointment.getCustomerId() == customerId) {
-                customerAppointments.add(appointment);
-            }
-        }
-        appointmentTable.setItems(customerAppointments);
+        appointmentFilteredList.setPredicate(a -> a.getCustomerId() == customer.getId());
     }
 
-    // Refreshes the table to show all appointments
+    // Resets the filter to show all appointments
+    // Refreshes the table if a new appointment was added
     public void refreshTable(boolean newItemWasAddedToDb) {
-        appointmentTable.setItems(allAppointments);
+        appointmentFilteredList.setPredicate(appointment -> true);
     }
 
     @Override
@@ -151,9 +155,12 @@ public class AppointmentTableController extends Table implements Controller, Tab
         AppointmentDAO appointmentDAO = new AppointmentDAO();
         try {
             allAppointments = (ObservableList<Appointment>) appointmentDAO.getAll();
+            appointmentFilteredList = new FilteredList<>(allAppointments);
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        initializeTable(appointmentTable, allAppointments);
+        appointmentsForTextPrompt = appointmentsForText.getText();
+        initializeTable(appointmentTable, appointmentFilteredList);
     }
 }

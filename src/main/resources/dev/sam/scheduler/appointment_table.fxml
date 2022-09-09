@@ -7,11 +7,18 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="441.0" prefWidth="1084.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.sam.scheduler.controller.AppointmentTableController">
    <children>
       <VBox prefHeight="290.0" prefWidth="977.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
+            <Text fx:id="appointmentsForText" strokeType="OUTSIDE" strokeWidth="0.0" text="Viewing Appointments For: ">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
             <TableView fx:id="appointmentTable" prefHeight="376.0" prefWidth="767.0">
               <columns>
                   <TableColumn fx:id="appointmentIdColumn" prefWidth="105.0" text="Appointment ID" />
