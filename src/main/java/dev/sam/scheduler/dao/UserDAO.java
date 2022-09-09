@@ -30,4 +30,19 @@ public class UserDAO implements DAO<User> {
         DB.closeConnection();
         return allUsers;
     }
+
+    @Override
+    public void insert(User user) throws SQLException {
+
+    }
+
+    @Override
+    public void update(User user, Integer itemId) throws SQLException {
+
+    }
+
+    @Override
+    public void delete(User user) throws SQLException {
+
+    }
 }

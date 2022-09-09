@@ -3,7 +3,7 @@ package dev.sam.scheduler.model;
 import dev.sam.scheduler.controller.AppointmentTableController;
 import dev.sam.scheduler.controller.CustomerTableController;
 import dev.sam.scheduler.dao.CountryDAOImpl;
-import dev.sam.scheduler.dao.FirstLevelDivisionDAOImpl;
+import dev.sam.scheduler.dao.FirstLevelDivisionDAO;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableView;
 
@@ -15,7 +15,7 @@ public enum SharedData {
 
     SharedData() {
         try {
-            firstLevelDivisions = new FirstLevelDivisionDAOImpl().getAllDivisions();
+            firstLevelDivisions = new FirstLevelDivisionDAO().getAll();
             countries = new CountryDAOImpl().getAllCountries();
         } catch (SQLException e) {
             throw new RuntimeException(e);

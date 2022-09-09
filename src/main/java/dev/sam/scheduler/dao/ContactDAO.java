@@ -15,6 +15,21 @@ public class ContactDAO implements DAO<Contact> {
         return null;
     }
 
+    @Override
+    public void insert(Contact contact) throws SQLException {
+
+    }
+
+    @Override
+    public void update(Contact contact, Integer itemId) throws SQLException {
+
+    }
+
+    @Override
+    public void delete(Contact contact) throws SQLException {
+
+    }
+
     public Contact getContactFromId(int contactId) throws SQLException {
         DB.makeConnection();
         Statement stmt = DB.getConnection().createStatement();

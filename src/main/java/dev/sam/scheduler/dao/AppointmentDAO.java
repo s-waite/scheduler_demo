@@ -71,46 +71,18 @@ public class AppointmentDAO implements DAO<Appointment> {
         return allAppointments;
     }
 
-    public List<Appointment> getAppointmentsOfCustomer(Customer customer) throws SQLException {
-        ObservableList<Appointment> customerAppointments = FXCollections.observableArrayList();
-        DB.makeConnection();
-        Statement stmt = DB.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM appointments WHERE Customer_ID = " + customer.getId());
-        while (rs.next()) {
-            int appointmentId = rs.getInt("Appointment_ID");
-            String title = rs.getString("Title");
-            String description = rs.getString("Description");
-            String location = rs.getString("Location");
-            String type = rs.getString("Type");
-            OffsetDateTime start = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Start"));
-            OffsetDateTime end = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("End"));
-            OffsetDateTime creationDate = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Create_Date"));
-            String createdBy = rs.getString("Created_By");
-            OffsetDateTime lastUpdatedDate = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Last_Update"));
-            String lastUpdatedBy = rs.getString("Last_Updated_By");
-            int customerId = rs.getInt("Customer_ID");
-            int userId = rs.getInt("User_ID");
-            int contactId = rs.getInt("Contact_ID");
+    @Override
+    public void insert(Appointment appointment) throws SQLException {
 
-            customerAppointments.add(new Appointment(
-                    appointmentId,
-                    title,
-                    description,
-                    location,
-                    type,
-                    start,
-                    end,
-                    creationDate,
-                    createdBy,
-                    lastUpdatedDate,
-                    lastUpdatedBy,
-                    customerId,
-                    userId,
-                    contactId
-            ));
+    }
 
-        }
-        DB.closeConnection();
-        return customerAppointments;
+    @Override
+    public void update(Appointment appointment, Integer itemId) throws SQLException {
+
+    }
+
+    @Override
+    public void delete(Appointment appointment) throws SQLException {
+
     }
 }

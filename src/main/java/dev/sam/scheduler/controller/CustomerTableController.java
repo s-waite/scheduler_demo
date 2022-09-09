@@ -5,7 +5,6 @@ import dev.sam.scheduler.helper.DateAndTimeHelper;
 import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.*;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -72,7 +71,7 @@ public class CustomerTableController extends Table implements Initializable, Con
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         SharedData.INSTANCE.setCustomerTableController(this);
-        customerDAO = new CustomerDAOImpl();
+        customerDAO = new CustomerDAO();
         countryDAO = new CountryDAOImpl();
         appointmentDAO = new AppointmentDAO();
         initializeNodes();
@@ -82,7 +81,7 @@ public class CustomerTableController extends Table implements Initializable, Con
     private void initializeTable() {
         customerTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         try {
-            customerTableView.setItems(customerDAO.getAllCustomers());
+            customerTableView.setItems(customerDAO.getAll());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -211,7 +210,7 @@ public class CustomerTableController extends Table implements Initializable, Con
                 }
 
                 try {
-                    customerDAO.deleteCustomer(customer);
+                    customerDAO.delete(customer);
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

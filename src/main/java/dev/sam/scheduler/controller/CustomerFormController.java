@@ -1,6 +1,6 @@
 package dev.sam.scheduler.controller;
 
-import dev.sam.scheduler.dao.CustomerDAOImpl;
+import dev.sam.scheduler.dao.CustomerDAO;
 import dev.sam.scheduler.model.*;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,7 +39,7 @@ public class CustomerFormController extends Form implements Initializable, Contr
     @FXML
     private Button saveButton;
 
-    CustomerDAOImpl customerDAO;
+    CustomerDAO customerDAO;
     Customer customer;
     int maxCustomerId;
 
@@ -54,7 +54,7 @@ public class CustomerFormController extends Form implements Initializable, Contr
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        customerDAO = new CustomerDAOImpl();
+        customerDAO = new CustomerDAO();
         initializeNodes();
         initializeClickListeners();
 
@@ -250,7 +250,7 @@ public class CustomerFormController extends Form implements Initializable, Contr
                     modifiedBy,
                     firstDivId
             );
-            customerDAO.insertCustomer(newCustomer);
+            customerDAO.insert(newCustomer);
         } else {
             customer.setName(customerName);
             customer.setAddress(address);
@@ -259,7 +259,7 @@ public class CustomerFormController extends Form implements Initializable, Contr
             customer.setLastUpdatedDate(modifyDate);
             customer.setLastUpdatedBy(activeUser.getUserName());
             customer.setDivisionId(firstDivId);
-            customerDAO.updateCustomer(customer, SharedData.INSTANCE.getActiveCustomer().getId());
+            customerDAO.update(customer, SharedData.INSTANCE.getActiveCustomer().getId());
         }
 
 

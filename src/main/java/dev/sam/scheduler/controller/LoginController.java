@@ -2,7 +2,6 @@ package dev.sam.scheduler.controller;
 
 import dev.sam.scheduler.App;
 import dev.sam.scheduler.dao.CustomerDAO;
-import dev.sam.scheduler.dao.CustomerDAOImpl;
 import dev.sam.scheduler.dao.UserDAO;
 import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.LocalizationEnum;
@@ -100,9 +99,9 @@ public class LoginController implements Initializable, Controller {
         String userNameInput = userNameTextField.getText();
         String passwordInput = passwordField.getText();
 
-        CustomerDAO customerDAO = new CustomerDAOImpl();
+        CustomerDAO customerDAO = new CustomerDAO();
         try {
-            customerDAO.getAllCustomers();
+            customerDAO.getAll();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
