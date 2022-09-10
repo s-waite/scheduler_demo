@@ -35,7 +35,7 @@ public class FirstLevelDivisionDAO implements DAO<FirstLevelDivision> {
     }
 
     @Override
-    public void update(FirstLevelDivision firstLevelDivision, Integer itemId) throws SQLException {
+    public void update(FirstLevelDivision firstLevelDivision) throws SQLException {
 
     }
 

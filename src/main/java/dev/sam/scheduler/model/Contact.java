@@ -5,6 +5,11 @@ public class Contact {
    private String contactName;
    private String email;
 
+   @Override
+   public String toString() {
+      return this.contactName;
+   }
+
    public int getId() {
       return id;
    }

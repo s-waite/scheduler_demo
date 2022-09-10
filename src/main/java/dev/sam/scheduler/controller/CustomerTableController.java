@@ -72,7 +72,7 @@ public class CustomerTableController extends Table implements Initializable, Con
     public void initialize(URL url, ResourceBundle resourceBundle) {
         SharedData.INSTANCE.setCustomerTableController(this);
         customerDAO = new CustomerDAO();
-        countryDAO = new CountryDAOImpl();
+        countryDAO = new CountryDAO();
         appointmentDAO = new AppointmentDAO();
         initializeNodes();
         initializeClickListeners();

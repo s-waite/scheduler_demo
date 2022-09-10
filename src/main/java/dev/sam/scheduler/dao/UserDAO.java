@@ -37,7 +37,7 @@ public class UserDAO implements DAO<User> {
     }
 
     @Override
-    public void update(User user, Integer itemId) throws SQLException {
+    public void update(User user) throws SQLException {
 
     }
 

@@ -74,12 +74,12 @@ public class CustomerDAO implements DAO<Customer> {
         DB.closeConnection();
     }
 
-    public void update(Customer customer, Integer customerId) throws SQLException {
+    public void update(Customer customer) throws SQLException {
         DB.makeConnection();
         Statement stmt = DB.getConnection().createStatement();
         String sqlStatement = SQLHelper.updateStatement(
                 "customers",
-                "WHERE Customer_ID = " + customerId,
+                "WHERE Customer_ID = " + customer.getId(),
                 SQLHelper.makeSetString("Customer_Name", customer.getName()),
                 SQLHelper.makeSetString("Address", customer.getAddress()),
                 SQLHelper.makeSetString("Postal_Code", customer.getPostalCode()),

@@ -259,7 +259,7 @@ public class CustomerFormController extends Form implements Initializable, Contr
             customer.setLastUpdatedDate(modifyDate);
             customer.setLastUpdatedBy(activeUser.getUserName());
             customer.setDivisionId(firstDivId);
-            customerDAO.update(customer, SharedData.INSTANCE.getActiveCustomer().getId());
+            customerDAO.update(customer);
         }
 
 

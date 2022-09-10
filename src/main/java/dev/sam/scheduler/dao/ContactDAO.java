@@ -2,17 +2,28 @@ package dev.sam.scheduler.dao;
 
 import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.model.Contact;
-import dev.sam.scheduler.model.Customer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContactDAO implements DAO<Contact> {
     @Override
     public List<Contact> getAll() throws SQLException {
-        return null;
+        List<Contact> allContacts = new ArrayList<>();
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM contacts");
+        while (rs.next()) {
+           int id = rs.getInt("Contact_ID");
+           String name = rs.getString("Contact_Name");
+           String email = rs.getString("Email");
+
+           allContacts.add(new Contact(id, name, email));
+        }
+        return allContacts;
     }
 
     @Override
@@ -21,7 +32,7 @@ public class ContactDAO implements DAO<Contact> {
     }
 
     @Override
-    public void update(Contact contact, Integer itemId) throws SQLException {
+    public void update(Contact contact) throws SQLException {
 
     }
 

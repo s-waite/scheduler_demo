@@ -2,8 +2,10 @@ package dev.sam.scheduler.dao;
 
 import dev.sam.scheduler.database.DB;
 import dev.sam.scheduler.helper.DateAndTimeHelper;
+import dev.sam.scheduler.helper.SQLHelper;
+import dev.sam.scheduler.helper.StringHelper;
 import dev.sam.scheduler.model.Appointment;
-import dev.sam.scheduler.model.Customer;
+import dev.sam.scheduler.model.SharedData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -11,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AppointmentDAO implements DAO<Appointment> {
@@ -27,6 +28,17 @@ public class AppointmentDAO implements DAO<Appointment> {
         }
         DB.closeConnection();
         return numOfAppointments;
+    }
+
+    public int getMaxAppointmentId() throws SQLException {
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT MAX(Appointment_ID) FROM appointments");
+        int maxId = 0;
+        while (rs.next()) {
+            maxId = rs.getInt(1);
+        }
+        return maxId;
     }
 
     @Override
@@ -73,12 +85,43 @@ public class AppointmentDAO implements DAO<Appointment> {
 
     @Override
     public void insert(Appointment appointment) throws SQLException {
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        String sqlStatement = (
+                "INSERT INTO customers " +
+                        "VALUES" +
+                        "(" +
+                        StringHelper.toStatementItem(appointment.getId());
 
+                        StringHelper.toStatementItem(DateAndTimeHelper.offsetDateTimeToDbStr(appointment.getCreationDate())) +
+                        StringHelper.toStatementItem(DateAndTimeHelper.offsetDateTimeToDbStr(appointment.getLastUpdatedDate())) +
+                        ")");
+        stmt.executeUpdate(sqlStatement);
+        DB.closeConnection();
     }
 
     @Override
-    public void update(Appointment appointment, Integer itemId) throws SQLException {
-
+    public void update(Appointment appointment) throws SQLException {
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        String sqlStatement = SQLHelper.updateStatement(
+                "appointments",
+                "WHERE Appointment_ID = " + appointment.getId(),
+                SQLHelper.makeSetString("Title", appointment.getTitle()),
+                SQLHelper.makeSetString("Description", appointment.getDescription()),
+                SQLHelper.makeSetString("Location", appointment.getLocation()),
+                SQLHelper.makeSetString("Type", appointment.getType()),
+                SQLHelper.makeSetString("Start", DateAndTimeHelper.offsetDateTimeToDbStr(appointment.getStartDateTime())),
+                SQLHelper.makeSetString("End", DateAndTimeHelper.offsetDateTimeToDbStr(appointment.getEndDateTime())),
+                SQLHelper.makeSetString("Last_Update", DateAndTimeHelper.offsetDateTimeToDbStr(appointment.getLastUpdatedDate())),
+                SQLHelper.makeSetString("Last_Updated_By", appointment.getLastUpdatedBy()),
+                SQLHelper.makeSetString("Customer_ID", appointment.getCustomerId()),
+                SQLHelper.makeSetString("User_ID", appointment.getUserId()),
+                SQLHelper.makeSetString("Contact_ID", appointment.getContactId())
+        );
+        System.out.println(sqlStatement);
+        stmt.executeUpdate(sqlStatement);
+        DB.closeConnection();
     }
 
     @Override

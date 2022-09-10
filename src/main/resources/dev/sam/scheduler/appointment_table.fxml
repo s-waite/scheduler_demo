@@ -56,9 +56,9 @@
             </TableView>
             <HBox alignment="CENTER_RIGHT" fillHeight="false" spacing="20.0">
                <children>
-                  <Button fx:id="newCustomerButton" mnemonicParsing="false" text="New Customer" />
-                  <Button fx:id="deleteCustomerButton" mnemonicParsing="false" text="Delete Customer" />
-                  <Button fx:id="updateCustomerButton" mnemonicParsing="false" text="Update Customer" />
+                  <Button fx:id="newAppointmentButton" mnemonicParsing="false" text="New Appointment" />
+                  <Button fx:id="deleteAppointmentButton" mnemonicParsing="false" text="Delete Apppointment" />
+                  <Button fx:id="updateAppointmentButton" mnemonicParsing="false" text="Update Appointment" />
                </children>
             </HBox>
          </children>

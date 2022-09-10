@@ -2,10 +2,9 @@ package dev.sam.scheduler.model;
 
 import dev.sam.scheduler.controller.AppointmentTableController;
 import dev.sam.scheduler.controller.CustomerTableController;
-import dev.sam.scheduler.dao.CountryDAOImpl;
+import dev.sam.scheduler.dao.CountryDAO;
 import dev.sam.scheduler.dao.FirstLevelDivisionDAO;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TableView;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ public enum SharedData {
     SharedData() {
         try {
             firstLevelDivisions = new FirstLevelDivisionDAO().getAll();
-            countries = new CountryDAOImpl().getAllCountries();
+            countries = new CountryDAO().getAll();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -24,10 +23,19 @@ public enum SharedData {
 
     private User activeUser;
     private Customer activeCustomer;
+    private Appointment activeAppointment;
     private CustomerTableController customerTableController;
     private AppointmentTableController appointmentTableController;
     private final ArrayList<FirstLevelDivision> firstLevelDivisions;
     private TabPane mainTabPane;
+
+    public Appointment getActiveAppointment() {
+        return activeAppointment;
+    }
+
+    public void setActiveAppointment(Appointment activeAppointment) {
+        this.activeAppointment = activeAppointment;
+    }
 
     public ArrayList<FirstLevelDivision> getFirstLevelDivisions() {
         return firstLevelDivisions;

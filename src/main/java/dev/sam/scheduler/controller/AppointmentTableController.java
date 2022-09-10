@@ -3,6 +3,7 @@ package dev.sam.scheduler.controller;
 import dev.sam.scheduler.dao.AppointmentDAO;
 import dev.sam.scheduler.dao.ContactDAO;
 import dev.sam.scheduler.helper.DateAndTimeHelper;
+import dev.sam.scheduler.helper.StageHelper;
 import dev.sam.scheduler.model.Appointment;
 import dev.sam.scheduler.model.Contact;
 import dev.sam.scheduler.model.Customer;
@@ -15,7 +16,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
@@ -73,6 +77,15 @@ public class AppointmentTableController extends Table implements Controller, Tab
     @FXML
     private Button resetCustomerButton;
 
+   @FXML
+   private Button newAppointmentButton;
+
+   @FXML
+   private Button updateAppointmentButton;
+
+   @FXML
+   private Button deleteAppointmentButton;
+
     @FXML
     private Text appointmentsForText;
     String appointmentsForTextPrompt;
@@ -114,6 +127,18 @@ public class AppointmentTableController extends Table implements Controller, Tab
         resetCustomerButton.setOnAction(actionEvent -> {
             SharedData.INSTANCE.setActiveCustomer(null);
             onThisTabSelected();
+        });
+
+        newAppointmentButton.setOnAction(actionEvent -> {
+            Stage newStage = new Stage();
+            try {
+                StageHelper.loadSceneIntoStage(newStage, "appointment_form.fxml");
+                // prevents the user from interacting with the customer view while the form is open
+                newStage.initModality(Modality.APPLICATION_MODAL);
+                newStage.showAndWait();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
