@@ -24,7 +24,6 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -176,6 +175,36 @@ public class AppointmentTableController extends Table implements Controller, Tab
             });
             refreshTable(true);
         });
+
+        updateAppointmentButton.setOnAction(actionEvent -> {
+            List<Appointment> selectedAppointments = appointmentTable.getSelectionModel().getSelectedItems();
+            if (selectedAppointments.size() > 1) {
+                Alert appointmentSelectionAlert = new Alert(Alert.AlertType.ERROR);
+                appointmentSelectionAlert.setTitle("Error Updating Appointment");
+                appointmentSelectionAlert.setHeaderText("Too many appointments selected");
+                appointmentSelectionAlert.setContentText("Please select only one appointment to edit");
+                appointmentSelectionAlert.showAndWait();
+                return;
+            } else if (selectedAppointments.size() == 0) {
+                Alert appointmentSelectionAlert = new Alert(Alert.AlertType.ERROR);
+                appointmentSelectionAlert.setTitle("Error Updating Appointment");
+                appointmentSelectionAlert.setHeaderText("No appointment Selected");
+                appointmentSelectionAlert.setContentText("Please select an appointment to edit");
+                appointmentSelectionAlert.showAndWait();
+                return;
+            }
+            Stage newStage = new Stage();
+            // This will be used by the customer form to load customer information in
+            SharedData.INSTANCE.setActiveAppointment(appointmentTable.getSelectionModel().getSelectedItem());
+            try {
+                StageHelper.loadSceneIntoStage(newStage, "appointment_form.fxml");
+                // prevents the user from interacting with the customer view while the form is open
+                newStage.initModality(Modality.APPLICATION_MODAL);
+                newStage.showAndWait();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**
@@ -212,11 +241,11 @@ public class AppointmentTableController extends Table implements Controller, Tab
         });
 
         startDateColumn.setCellValueFactory(cellData -> {
-            return new ReadOnlyObjectWrapper<>(DateAndTimeHelper.offsetDateTimeToLocalTimeStr(cellData.getValue().getStartDateTime()));
+            return new ReadOnlyObjectWrapper<>(DateAndTimeHelper.offsetDateTimeToLocalDateTimeStr(cellData.getValue().getStartDateTime()));
         });
 
         endDateColumn.setCellValueFactory(cellData -> {
-            return new ReadOnlyObjectWrapper<>(DateAndTimeHelper.offsetDateTimeToLocalTimeStr(cellData.getValue().getEndDateTime()));
+            return new ReadOnlyObjectWrapper<>(DateAndTimeHelper.offsetDateTimeToLocalDateTimeStr(cellData.getValue().getEndDateTime()));
         });
 
         customerIdColumn.setCellValueFactory(cellData -> {

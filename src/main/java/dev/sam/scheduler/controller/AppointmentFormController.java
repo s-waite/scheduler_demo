@@ -81,6 +81,12 @@ public class AppointmentFormController extends Form implements Initializable, Co
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
+        } else {
+            try {
+                loadAppointmentIntoFields(activeAppointment);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         userIdInput.setText(String.valueOf(SharedData.INSTANCE.getActiveUser().getUserId()));
 
@@ -101,9 +107,24 @@ public class AppointmentFormController extends Form implements Initializable, Co
         }
     }
 
+    public void loadAppointmentIntoFields(Appointment appointment) throws SQLException {
+        ContactDAO contactDAO = new ContactDAO();
+        appIdInput.setText(String.valueOf(appointment.getId()));
+        titleInput.setText(appointment.getTitle());
+        descInput.setText(appointment.getDescription());
+        locInput.setText(appointment.getLocation());
+        contactComboBox.setValue(contactDAO.getContactFromId(appointment.getContactId()));
+        typeInput.setText(appointment.getType());
+        startDatePicker.setValue(DateAndTimeHelper.offsetDateTimeToLocalDate(appointment.getStartDateTime()));
+        startTimeInput.setText(DateAndTimeHelper.offsetDateTimeToLocalTimeStr(appointment.getStartDateTime()));
+        endDatePicker.setValue(DateAndTimeHelper.offsetDateTimeToLocalDate(appointment.getEndDateTime()));
+        endTimeInput.setText(DateAndTimeHelper.offsetDateTimeToLocalTimeStr(appointment.getEndDateTime()));
+        customerIdInput.setText(String.valueOf(appointment.getCustomerId()));
+        userIdInput.setText(String.valueOf(appointment.getUserId()));
+    }
+
     @Override
     public void initializeClickListeners() {
-
         cancelButton.setOnAction(actionEvent -> {
             Stage stage = (Stage) userIdInput.getScene().getWindow();
             stage.close();
@@ -207,6 +228,8 @@ public class AppointmentFormController extends Form implements Initializable, Co
             returnCodes.add(ValidationCode.TIME_ERR);
         }
 
+        // TODO overlapping appointments
+
         if (returnCodes.isEmpty()) {
             returnCodes.add(ValidationCode.OK);
         }
@@ -233,7 +256,6 @@ public class AppointmentFormController extends Form implements Initializable, Co
         int userId = Integer.parseInt(userIdInput.getText());
         int contactId = contactComboBox.getValue().getId();
 
-        System.out.println(SharedData.INSTANCE.getActiveAppointment());
         if (SharedData.INSTANCE.getActiveAppointment() == null) {
             System.out.println("save");
             appointmentDAO.insert(new Appointment(
@@ -265,6 +287,7 @@ public class AppointmentFormController extends Form implements Initializable, Co
             activeAppointment.setCustomerId(customerId);
             activeAppointment.setCustomerId(userId);
             activeAppointment.setContactId(contactId);
+            appointmentDAO.update(activeAppointment);
         }
 
         AppointmentTableController appointmentTableController = SharedData.INSTANCE.getAppointmentTableController();

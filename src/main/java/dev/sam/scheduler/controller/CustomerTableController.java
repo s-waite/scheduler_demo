@@ -118,11 +118,11 @@ public class CustomerTableController extends Table implements Initializable, Con
         });
 
         creationDateColumn.setCellValueFactory(cellData -> {
-            return new ReadOnlyObjectWrapper<>(DateAndTimeHelper.offsetDateTimeToLocalTimeStr(cellData.getValue().getCreationDate()));
+            return new ReadOnlyObjectWrapper<>(DateAndTimeHelper.offsetDateTimeToLocalDateTimeStr(cellData.getValue().getCreationDate()));
         });
 
         lastUpdatedDateColumn.setCellValueFactory(cellData -> {
-            return new ReadOnlyObjectWrapper<>(DateAndTimeHelper.offsetDateTimeToLocalTimeStr(cellData.getValue().getLastUpdatedDate()));
+            return new ReadOnlyObjectWrapper<>(DateAndTimeHelper.offsetDateTimeToLocalDateTimeStr(cellData.getValue().getLastUpdatedDate()));
         });
 
     }
