@@ -83,6 +83,47 @@ public class AppointmentDAO implements DAO<Appointment> {
         return allAppointments;
     }
 
+    public List<Appointment> getAllFromCustomerId(int customerIdInp) throws SQLException {
+        ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM appointments WHERE Customer_ID = " + customerIdInp);
+        while (rs.next()) {
+            int appointmentId = rs.getInt("Appointment_ID");
+            String title = rs.getString("Title");
+            String description = rs.getString("Description");
+            String location = rs.getString("Location");
+            String type = rs.getString("Type");
+            OffsetDateTime start = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Start"));
+            OffsetDateTime end = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("End"));
+            OffsetDateTime creationDate = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Create_Date"));
+            String createdBy = rs.getString("Created_By");
+            OffsetDateTime lastUpdatedDate = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Last_Update"));
+            String lastUpdatedBy = rs.getString("Last_Updated_By");
+            int customerId = rs.getInt("Customer_ID");
+            int userId = rs.getInt("User_ID");
+            int contactId = rs.getInt("Contact_ID");
+
+            allAppointments.add(new Appointment(
+                    appointmentId,
+                    title,
+                    description,
+                    location,
+                    type,
+                    start,
+                    end,
+                    creationDate,
+                    createdBy,
+                    lastUpdatedDate,
+                    lastUpdatedBy,
+                    customerId,
+                    userId,
+                    contactId
+            ));
+        }
+        return allAppointments;
+    }
+
     @Override
     public void insert(Appointment appointment) throws SQLException {
         DB.makeConnection();

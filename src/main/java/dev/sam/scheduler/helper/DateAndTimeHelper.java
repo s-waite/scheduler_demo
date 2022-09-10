@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 
 public class DateAndTimeHelper {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public static OffsetDateTime dbDateStringToDateTime(String dateTimeStr) {

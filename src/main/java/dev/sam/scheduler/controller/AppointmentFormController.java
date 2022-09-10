@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.sql.SQLException;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -150,6 +149,7 @@ public class AppointmentFormController extends Form implements Initializable, Co
                     case END_TIME_OUTSIDE_HRS_ERR -> formErrors.add("End time outside business hours");
                     case TIME_ERR -> formErrors.add("Please enter valid times");
                     case START_DATE_BEFORE_END_ERR -> formErrors.add("Start date is before end date");
+                    case CONFLICTING_APP_ERR -> formErrors.add("Customer has conflicting appointments");
                 }
             }
             StringBuilder errorMsg = new StringBuilder();
@@ -198,16 +198,40 @@ public class AppointmentFormController extends Form implements Initializable, Co
         }
 
         CustomerDAO customerDAO = new CustomerDAO();
+        AppointmentDAO appointmentDAO = new AppointmentDAO();
         try {
-            if (!customerDAO.customerIdExists(Integer.parseInt(customerIdInput.getText())))
+            if (!customerDAO.customerIdExists(Integer.parseInt(customerIdInput.getText()))) {
                 returnCodes.add(ValidationCode.CUSTOMER_ID_NOT_FOUND_ERR);
-        } catch (SQLException e) {
+            } else {
+                List<Appointment> customerApps = appointmentDAO.getAllFromCustomerId(Integer.parseInt(customerIdInput.getText()));
+                for (Appointment appointment : customerApps) {
+                    Boolean isConflict = false;
+                    ZonedDateTime appointmentStart = appointment.getStartDateTime().toZonedDateTime();
+                    ZonedDateTime appointmentEnd = appointment.getEndDateTime().toZonedDateTime();
+                    ZonedDateTime proposedStart = LocalDateTime.parse(startDatePicker.getValue() + " " + startTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneOffset.UTC);
+                    ZonedDateTime proposedEnd = LocalDateTime.parse(endDatePicker.getValue() + " " + endTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneOffset.UTC);
+
+                    if ((proposedStart.isAfter(appointmentStart) || proposedStart.isEqual(appointmentStart)) && proposedStart.isBefore(appointmentEnd)) {
+                        isConflict = true;
+                    }
+
+                    if ((proposedEnd.isAfter(appointmentStart) || proposedEnd.isEqual(appointmentStart)) && proposedEnd.isBefore(appointmentEnd)) {
+                        isConflict = true;
+                    }
+
+                    if (isConflict) {
+                        returnCodes.add(ValidationCode.CONFLICTING_APP_ERR);
+                        break;
+                    }
+                }
+            }
+        } catch (
+                SQLException e) {
             throw new RuntimeException(e);
         }
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         try {
-            ZonedDateTime startDateTime = LocalDateTime.parse(startDatePicker.getValue() + " " + startTimeInput.getText(), formatter).atZone(ZoneId.systemDefault());
-            ZonedDateTime endDateTime = LocalDateTime.parse(endDatePicker.getValue() + " " + endTimeInput.getText(), formatter).atZone(ZoneId.systemDefault());
+            ZonedDateTime startDateTime = LocalDateTime.parse(startDatePicker.getValue() + " " + startTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneId.systemDefault());
+            ZonedDateTime endDateTime = LocalDateTime.parse(endDatePicker.getValue() + " " + endTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneId.systemDefault());
             ZonedDateTime startDateTimeEST = startDateTime.withZoneSameInstant(ZoneId.of("US/Eastern"));
             System.out.println(startDateTimeEST);
             ZonedDateTime acceptableStartTime = startDateTimeEST.withHour(8).withMinute(0).withSecond(0);
@@ -224,11 +248,11 @@ public class AppointmentFormController extends Form implements Initializable, Co
             if (endDateTimeEST.getHour() < acceptableStartTime.getHour() || endDateTimeEST.getHour() > acceptableEndTime.getHour()) {
                 returnCodes.add(ValidationCode.END_TIME_OUTSIDE_HRS_ERR);
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             returnCodes.add(ValidationCode.TIME_ERR);
         }
 
-        // TODO overlapping appointments
 
         if (returnCodes.isEmpty()) {
             returnCodes.add(ValidationCode.OK);
@@ -298,5 +322,6 @@ public class AppointmentFormController extends Form implements Initializable, Co
 
         Stage stage = (Stage) typeInput.getScene().getWindow();
         stage.close();
+        appointmentTableController.onThisTabSelected();
     }
 }
