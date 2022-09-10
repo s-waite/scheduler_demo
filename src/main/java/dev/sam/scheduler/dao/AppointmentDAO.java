@@ -137,6 +137,9 @@ public class AppointmentDAO implements DAO<Appointment> {
 
     @Override
     public void delete(Appointment appointment) throws SQLException {
-
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        stmt.executeUpdate("DELETE FROM appointments WHERE Appointment_ID = " + appointment.getId());
+        DB.closeConnection();
     }
 }

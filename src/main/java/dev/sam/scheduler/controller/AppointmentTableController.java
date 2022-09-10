@@ -24,6 +24,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -162,6 +163,18 @@ public class AppointmentTableController extends Table implements Controller, Tab
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        });
+
+        deleteAppointmentButton.setOnAction(actionEvent -> {
+            List<Appointment> selectedAppointments = appointmentTable.getSelectionModel().getSelectedItems();
+            selectedAppointments.forEach(appointment -> {
+                try {
+                    appointmentDAO.delete(appointment);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            refreshTable(true);
         });
     }
 
