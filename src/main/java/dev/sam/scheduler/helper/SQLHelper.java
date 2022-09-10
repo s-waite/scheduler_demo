@@ -54,4 +54,5 @@ public class SQLHelper {
             throw new SQLException("Set string can only use integers or strings");
         }
     }
+
 }

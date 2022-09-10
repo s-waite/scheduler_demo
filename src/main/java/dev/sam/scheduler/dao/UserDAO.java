@@ -31,6 +31,13 @@ public class UserDAO implements DAO<User> {
         return allUsers;
     }
 
+    public boolean userIdExists(int userId) throws SQLException {
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE User_ID = " + userId + " LIMIT 1");
+        return rs.next();
+    }
+
     @Override
     public void insert(User user) throws SQLException {
 

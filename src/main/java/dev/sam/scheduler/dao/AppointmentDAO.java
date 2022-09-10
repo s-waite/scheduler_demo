@@ -88,14 +88,25 @@ public class AppointmentDAO implements DAO<Appointment> {
         DB.makeConnection();
         Statement stmt = DB.getConnection().createStatement();
         String sqlStatement = (
-                "INSERT INTO customers " +
+                "INSERT INTO appointments " +
                         "VALUES" +
                         "(" +
-                        StringHelper.toStatementItem(appointment.getId());
-
+                        appointment.getId() + "," +
+                        StringHelper.toStatementItem(appointment.getTitle()) +
+                        StringHelper.toStatementItem(appointment.getDescription()) +
+                        StringHelper.toStatementItem(appointment.getLocation()) +
+                        StringHelper.toStatementItem(appointment.getType()) +
+                        StringHelper.toStatementItem(DateAndTimeHelper.offsetDateTimeToDbStr(appointment.getStartDateTime())) +
+                        StringHelper.toStatementItem(DateAndTimeHelper.offsetDateTimeToDbStr(appointment.getEndDateTime())) +
                         StringHelper.toStatementItem(DateAndTimeHelper.offsetDateTimeToDbStr(appointment.getCreationDate())) +
+                        StringHelper.toStatementItem(appointment.getCreatedBy()) +
                         StringHelper.toStatementItem(DateAndTimeHelper.offsetDateTimeToDbStr(appointment.getLastUpdatedDate())) +
+                        StringHelper.toStatementItem(appointment.getLastUpdatedBy()) +
+                        appointment.getCustomerId() + "," +
+                        appointment.getUserId() + "," +
+                        appointment.getContactId() +
                         ")");
+        System.out.println(sqlStatement);
         stmt.executeUpdate(sqlStatement);
         DB.closeConnection();
     }

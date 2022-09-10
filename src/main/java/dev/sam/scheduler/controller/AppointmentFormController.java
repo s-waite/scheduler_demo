@@ -2,6 +2,8 @@ package dev.sam.scheduler.controller;
 
 import dev.sam.scheduler.dao.AppointmentDAO;
 import dev.sam.scheduler.dao.ContactDAO;
+import dev.sam.scheduler.dao.CustomerDAO;
+import dev.sam.scheduler.dao.UserDAO;
 import dev.sam.scheduler.helper.DateAndTimeHelper;
 import dev.sam.scheduler.model.Appointment;
 import dev.sam.scheduler.model.Contact;
@@ -9,17 +11,15 @@ import dev.sam.scheduler.model.SharedData;
 import dev.sam.scheduler.model.User;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.sql.SQLException;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class AppointmentFormController extends Form implements Initializable, Controller {
@@ -103,23 +103,120 @@ public class AppointmentFormController extends Form implements Initializable, Co
 
     @Override
     public void initializeClickListeners() {
+
+        cancelButton.setOnAction(actionEvent -> {
+            Stage stage = (Stage) userIdInput.getScene().getWindow();
+            stage.close();
+        });
+
         saveButton.setOnAction(actionEvent -> {
-            try {
-                saveForm();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+            List<String> formErrors = new ArrayList<>();
+            ArrayList<ValidationCode> formCodes = validateForm();
+            for (ValidationCode validationCode : formCodes) {
+                switch (validationCode) {
+                    case OK -> {
+                        try {
+                            saveForm();
+                        } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        }
+                        return;
+                    }
+                    case EMPTY_FIELDS_ERR -> formErrors.add("Empty fields");
+                    case USER_ID_NOT_FOUND_ERR -> formErrors.add("User ID not found");
+                    case CUSTOMER_ID_NOT_FOUND_ERR -> formErrors.add("Customer ID not found");
+                    case START_TIME_OUTSIDE_HRS_ERR -> formErrors.add("Start time outside business hours");
+                    case END_TIME_OUTSIDE_HRS_ERR -> formErrors.add("End time outside business hours");
+                    case TIME_ERR -> formErrors.add("Please enter valid times");
+                    case START_DATE_BEFORE_END_ERR -> formErrors.add("Start date is before end date");
+                }
             }
+            StringBuilder errorMsg = new StringBuilder();
+            // Adds each error to the error message string builder
+            formErrors.forEach(err -> {
+                errorMsg.append(err);
+                errorMsg.append("\n");
+            });
+
+            // Show errors in alert popup to user
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Form Error");
+            alert.setHeaderText("Please correct errors in the following fields:");
+            alert.setContentText(errorMsg.toString());
+            alert.showAndWait();
         });
 
     }
 
     @Override
     ArrayList<ValidationCode> validateForm() {
-        return null;
+        ArrayList<ValidationCode> returnCodes = new ArrayList<>();
+
+        if (titleInput.getText().isBlank()
+                || descInput.getText().isBlank()
+                || locInput.getText().isBlank()
+                || contactComboBox.getValue() == null
+                || typeInput.getText().isBlank()
+                || userIdInput.getText().isBlank()
+                || customerIdInput.getText().isBlank()
+                || startDatePicker.getValue() == null
+                || startTimeInput.getText().isBlank()
+                || endDatePicker.getValue() == null
+                || endTimeInput.getText().isBlank()) {
+            returnCodes.add(ValidationCode.EMPTY_FIELDS_ERR);
+            return returnCodes;
+        }
+
+        UserDAO userDAO = new UserDAO();
+        try {
+            if (!userDAO.userIdExists(Integer.parseInt(userIdInput.getText()))) {
+                returnCodes.add(ValidationCode.USER_ID_NOT_FOUND_ERR);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        CustomerDAO customerDAO = new CustomerDAO();
+        try {
+            if (!customerDAO.customerIdExists(Integer.parseInt(customerIdInput.getText())))
+                returnCodes.add(ValidationCode.CUSTOMER_ID_NOT_FOUND_ERR);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        try {
+            ZonedDateTime startDateTime = LocalDateTime.parse(startDatePicker.getValue() + " " + startTimeInput.getText(), formatter).atZone(ZoneId.systemDefault());
+            ZonedDateTime endDateTime = LocalDateTime.parse(endDatePicker.getValue() + " " + endTimeInput.getText(), formatter).atZone(ZoneId.systemDefault());
+            ZonedDateTime startDateTimeEST = startDateTime.withZoneSameInstant(ZoneId.of("US/Eastern"));
+            System.out.println(startDateTimeEST);
+            ZonedDateTime acceptableStartTime = startDateTimeEST.withHour(8).withMinute(0).withSecond(0);
+            ZonedDateTime endDateTimeEST = endDateTime.withZoneSameInstant(ZoneId.of("US/Eastern"));
+            ZonedDateTime acceptableEndTime = endDateTimeEST.withHour(20).withMinute(0).withSecond(0);
+            if (startDateTime.isAfter(endDateTime)) {
+                returnCodes.add(ValidationCode.START_DATE_BEFORE_END_ERR);
+            }
+
+            if (startDateTimeEST.getHour() < acceptableStartTime.getHour() || startDateTimeEST.getHour() > acceptableEndTime.getHour()) {
+                returnCodes.add(ValidationCode.START_TIME_OUTSIDE_HRS_ERR);
+            }
+
+            if (endDateTimeEST.getHour() < acceptableStartTime.getHour() || endDateTimeEST.getHour() > acceptableEndTime.getHour()) {
+                returnCodes.add(ValidationCode.END_TIME_OUTSIDE_HRS_ERR);
+            }
+        } catch (Exception e) {
+            returnCodes.add(ValidationCode.TIME_ERR);
+        }
+
+        if (returnCodes.isEmpty()) {
+            returnCodes.add(ValidationCode.OK);
+        }
+
+        return returnCodes;
     }
 
     @Override
     void saveForm() throws SQLException {
+        AppointmentDAO appointmentDAO = new AppointmentDAO();
         User activeUser = SharedData.INSTANCE.getActiveUser();
         int appId = Integer.parseInt(appIdInput.getText().strip());
         String title = titleInput.getText().strip();
@@ -136,8 +233,10 @@ public class AppointmentFormController extends Form implements Initializable, Co
         int userId = Integer.parseInt(userIdInput.getText());
         int contactId = contactComboBox.getValue().getId();
 
+        System.out.println(SharedData.INSTANCE.getActiveAppointment());
         if (SharedData.INSTANCE.getActiveAppointment() == null) {
-            new Appointment(
+            System.out.println("save");
+            appointmentDAO.insert(new Appointment(
                     appId,
                     title,
                     description,
@@ -152,7 +251,8 @@ public class AppointmentFormController extends Form implements Initializable, Co
                     customerId,
                     userId,
                     contactId
-            );
+            ));
+
         } else {
             activeAppointment.setTitle(title);
             activeAppointment.setDescription(description);

@@ -11,7 +11,8 @@ public abstract class Form {
         PHONE_ERR,
         COUNTRY_ERR,
         FIRST_DIV_ERR,
-        OK
+        EMPTY_FIELDS_ERR,
+        USER_ID_NOT_FOUND_ERR, CUSTOMER_ID_NOT_FOUND_ERR, START_DATE_BEFORE_END_ERR, TIME_ERR, OUTSIDE_BUSINESS_HOURS_ERR, START_TIME_OUTSIDE_HRS_ERR, END_TIME_OUTSIDE_HRS_ERR, OK
     }
 
     abstract ArrayList<ValidationCode> validateForm();

@@ -111,4 +111,16 @@ public class CustomerDAO implements DAO<Customer> {
         }
         return maxId;
     }
+
+    public boolean customerIdExists(int customerId) throws SQLException {
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM customers WHERE Customer_ID = " + customerId + " LIMIT 1");
+        boolean customerFound = false;
+        while (rs.next()) {
+           customerFound = true;
+        }
+        DB.closeConnection();
+        return customerFound;
+    }
 }
