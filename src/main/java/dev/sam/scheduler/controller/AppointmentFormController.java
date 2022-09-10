@@ -266,5 +266,14 @@ public class AppointmentFormController extends Form implements Initializable, Co
             activeAppointment.setCustomerId(userId);
             activeAppointment.setContactId(contactId);
         }
+
+        AppointmentTableController appointmentTableController = SharedData.INSTANCE.getAppointmentTableController();
+        appointmentTableController.refreshTable(true);
+
+        // Active customer is not null since are finished editing it
+        SharedData.INSTANCE.setActiveAppointment(null);
+
+        Stage stage = (Stage) typeInput.getScene().getWindow();
+        stage.close();
     }
 }

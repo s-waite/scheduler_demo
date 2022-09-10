@@ -77,14 +77,14 @@ public class AppointmentTableController extends Table implements Controller, Tab
     @FXML
     private Button resetCustomerButton;
 
-   @FXML
-   private Button newAppointmentButton;
+    @FXML
+    private Button newAppointmentButton;
 
-   @FXML
-   private Button updateAppointmentButton;
+    @FXML
+    private Button updateAppointmentButton;
 
-   @FXML
-   private Button deleteAppointmentButton;
+    @FXML
+    private Button deleteAppointmentButton;
 
     @FXML
     private Text appointmentsForText;
@@ -92,8 +92,31 @@ public class AppointmentTableController extends Table implements Controller, Tab
 
     ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
     FilteredList<Appointment> appointmentFilteredList;
+    AppointmentDAO appointmentDAO;
 
     enum Filter {ALL, WEEK, MONTH}
+
+    /**
+     * This function is called after the root elements of the scene has been processed, and sets up the scene when it is loaded
+     *
+     * @param url
+     * @param resourceBundle
+     */
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        SharedData.INSTANCE.setAppointmentTableController(this);
+        appointmentDAO = new AppointmentDAO();
+        try {
+            allAppointments = (ObservableList<Appointment>) appointmentDAO.getAll();
+            appointmentFilteredList = new FilteredList<>(allAppointments);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        appointmentsForTextPrompt = appointmentsForText.getText();
+        initializeNodes();
+        initializeClickListeners();
+    }
 
     /**
      * Set up the nodes for the scene, including the table
@@ -274,27 +297,16 @@ public class AppointmentTableController extends Table implements Controller, Tab
      */
     public void refreshTable(boolean newItemWasAddedToDb) {
         appointmentFilteredList.setPredicate(appointment -> true);
-    }
-
-    /**
-     * This function is called after the root elements of the scene has been processed, and sets up the scene when it is loaded
-     *
-     * @param url
-     * @param resourceBundle
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-        SharedData.INSTANCE.setAppointmentTableController(this);
-        AppointmentDAO appointmentDAO = new AppointmentDAO();
-        try {
-            allAppointments = (ObservableList<Appointment>) appointmentDAO.getAll();
-            appointmentFilteredList = new FilteredList<>(allAppointments);
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        if (newItemWasAddedToDb) {
+            try {
+                allAppointments = (ObservableList<Appointment>) appointmentDAO.getAll();
+                appointmentFilteredList = new FilteredList<>(allAppointments);
+               initializeTable(appointmentTable, appointmentFilteredList);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            appointmentTable.refresh();
         }
-        appointmentsForTextPrompt = appointmentsForText.getText();
-        initializeNodes();
-        initializeClickListeners();
     }
+
 }
