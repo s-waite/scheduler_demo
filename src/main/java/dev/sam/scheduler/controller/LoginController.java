@@ -16,10 +16,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -80,8 +83,19 @@ public class LoginController implements Initializable, Controller {
         });
 
         loginButton.setOnAction(actionEvent -> {
+            File file = new File("login_activity.txt");
+            String activityString = "\n" + userNameTextField.getText() + ", " + OffsetDateTime.now(ZoneOffset.UTC);
+            BufferedWriter bufferedWriter;
+            try {
+                file.createNewFile();
+                bufferedWriter = new BufferedWriter(new FileWriter(file, true));
+                bufferedWriter.append(activityString);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             if (isValidLogin()) {
                 try {
+                    bufferedWriter.append(", successful");
                     stage.setWidth(WindowSizes.WIDTH_LARGE.getSize());
                     stage.setHeight(WindowSizes.HEIGHT_MED.getSize());
                     StageHelper.loadSceneIntoStage(stage, "main_tab_view.fxml");
@@ -90,6 +104,19 @@ public class LoginController implements Initializable, Controller {
                 }
             } else {
                 //TODO: show error
+                Alert invalidLoginAlert = new Alert(Alert.AlertType.ERROR);
+                invalidLoginAlert.setHeaderText("Invalid Login");
+                invalidLoginAlert.setContentText("Please check your credentials and try again");
+                try {
+                    bufferedWriter.append(", unsuccessful");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            try {
+                bufferedWriter.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         });
 
