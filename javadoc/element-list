@@ -1,0 +1,8 @@
+module:dev.sam.scheduler
+dev.sam.scheduler
+dev.sam.scheduler.controller
+dev.sam.scheduler.dao
+dev.sam.scheduler.database
+dev.sam.scheduler.helper
+dev.sam.scheduler.model
+dev.sam.scheduler.view
