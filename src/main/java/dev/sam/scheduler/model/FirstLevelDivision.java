@@ -1,5 +1,8 @@
 package dev.sam.scheduler.model;
 
+/**
+ * The first level division database entity
+ */
 public class FirstLevelDivision {
     private int divisionId;
     private String division;

@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the main tab view
+ */
 public class MainTabViewController implements Initializable {
     @FXML
     private TabPane tabPane;
@@ -27,6 +30,12 @@ public class MainTabViewController implements Initializable {
     @FXML
     private Tab appointmentTab;
 
+    /**
+     * Set up the scene.
+     *
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         checkForAppointments();
@@ -42,7 +51,7 @@ public class MainTabViewController implements Initializable {
         customerTab.setOnSelectionChanged(event -> {
             // Fires when the customer tab is selected
             if (customerTab.isSelected()) {
-               customerTableController.onThisTabSelected();
+                customerTableController.onThisTabSelected();
             }
         });
 
@@ -54,6 +63,13 @@ public class MainTabViewController implements Initializable {
 
     }
 
+    /**
+     * Check if the logged in user has upcoming appointments.
+     * <p>
+     * If they do, show an alert with the appointment info.
+     * <p>
+     * If they don't show an alert telling them they don't have any
+     */
     public void checkForAppointments() {
         ZonedDateTime userTime = ZonedDateTime.now(ZoneId.systemDefault());
         System.out.println(userTime);

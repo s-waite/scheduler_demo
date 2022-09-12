@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the report tab
+ */
 public class ReportTabController extends Table implements Controller, Tab, Initializable {
 
     @FXML
@@ -78,6 +81,9 @@ public class ReportTabController extends Table implements Controller, Tab, Initi
     @FXML
     private ComboBox<Contact> contactComboBox;
 
+    /**
+     * Initialize the nodes of the scene
+     */
     @Override
     public void initializeNodes() {
         ContactDAO contactDAO = new ContactDAO();
@@ -101,6 +107,12 @@ public class ReportTabController extends Table implements Controller, Tab, Initi
         reportBox.getChildren().remove(totalAppointmentsText);
     }
 
+    /**
+     * Initialize the table
+     * @param tableView The table to set up
+     * @param tableItems The items to populate the table with
+     * @param <T> The type parameter
+     */
     @Override
     <T> void initializeTable(TableView<T> tableView, List<T> tableItems) {
         super.initializeTable(tableView, tableItems);
@@ -154,6 +166,9 @@ public class ReportTabController extends Table implements Controller, Tab, Initi
         });
     }
 
+    /**
+     * Set up the click listeners for the scene
+     */
     @Override
     public void initializeClickListeners() {
         generateReportButton.setOnAction(actionEvent -> {
@@ -179,6 +194,9 @@ public class ReportTabController extends Table implements Controller, Tab, Initi
 
     }
 
+    /**
+     * Report enum for the different types of reports that can be created.
+     */
     enum Report {
         APP_BY_TYPE_MONTH(1, "Number of appointments by type and month"),
         SCHEDULE_FOR_CONTACTS(2, "Schedule for each contact"),
@@ -202,6 +220,9 @@ public class ReportTabController extends Table implements Controller, Tab, Initi
         }
     }
 
+    /**
+     * Show report for the schedule of a contact.
+     */
     private void showScheduleForContact() {
         removeAllReports();
         reportBox.getChildren().add(appointmentTable);
@@ -213,6 +234,9 @@ public class ReportTabController extends Table implements Controller, Tab, Initi
         }
     }
 
+    /**
+     * Show report for the total appointments in the database
+     */
     private void showTotalAppointments() {
         removeAllReports();
         reportBox.getChildren().add(totalAppointmentsText);
@@ -224,6 +248,9 @@ public class ReportTabController extends Table implements Controller, Tab, Initi
         }
     }
 
+    /**
+     * Show appointment types and number by month.
+     */
     private void showAppointmentTypeReport() {
         removeAllReports();
         reportBox.getChildren().add(appointmentTypeReportGrid);
@@ -260,6 +287,11 @@ public class ReportTabController extends Table implements Controller, Tab, Initi
         }
     }
 
+    /**
+     * Initialize the scene.
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         appointmentDAO = new AppointmentDAO();

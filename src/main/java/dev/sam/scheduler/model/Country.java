@@ -1,5 +1,8 @@
 package dev.sam.scheduler.model;
 
+/**
+ * The country database entity
+ */
 public class Country {
     private int countryId;
     private String countryName;

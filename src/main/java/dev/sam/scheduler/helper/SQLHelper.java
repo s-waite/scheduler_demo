@@ -40,9 +40,9 @@ public class SQLHelper {
      * For example if you pass in the column name "User_ID" and 1, it will return the string User_ID = 1
      * The method will add quotes to an item if it is a string
      *
-     * @param columnName
-     * @param itemToSet
-     * @return
+     * @param columnName The column name
+     * @param itemToSet The item to set
+     * @return The string
      * @throws SQLException
      */
     public static String makeSetString(String columnName, Object itemToSet) throws SQLException {

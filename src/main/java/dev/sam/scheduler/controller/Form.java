@@ -3,6 +3,9 @@ package dev.sam.scheduler.controller;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * Form class that provides error codes
+ */
 public abstract class Form {
     enum ValidationCode {
         NAME_ERR,

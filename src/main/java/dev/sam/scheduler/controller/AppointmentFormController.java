@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * The controller for the appointment form
+ */
 public class AppointmentFormController extends Form implements Initializable, Controller {
     @FXML
     private TextField appIdInput;
@@ -68,6 +71,11 @@ public class AppointmentFormController extends Form implements Initializable, Co
 
     Appointment activeAppointment;
 
+    /**
+     * Set up the form.
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         activeAppointment = SharedData.INSTANCE.getActiveAppointment();
@@ -93,6 +101,9 @@ public class AppointmentFormController extends Form implements Initializable, Co
         initializeClickListeners();
     }
 
+    /**
+     * Initialize the nodes in the scene.
+     */
     @Override
     public void initializeNodes() {
         ContactDAO contactDAO = new ContactDAO();
@@ -106,6 +117,11 @@ public class AppointmentFormController extends Form implements Initializable, Co
         }
     }
 
+    /**
+     * If load the information from an appointment into the form fields.
+     * @param appointment The appointment to load.
+     * @throws SQLException
+     */
     public void loadAppointmentIntoFields(Appointment appointment) throws SQLException {
         ContactDAO contactDAO = new ContactDAO();
         appIdInput.setText(String.valueOf(appointment.getId()));
@@ -122,6 +138,9 @@ public class AppointmentFormController extends Form implements Initializable, Co
         userIdInput.setText(String.valueOf(appointment.getUserId()));
     }
 
+    /**
+     * Set up click listeners for the scene
+     */
     @Override
     public void initializeClickListeners() {
         cancelButton.setOnAction(actionEvent -> {
@@ -169,6 +188,10 @@ public class AppointmentFormController extends Form implements Initializable, Co
 
     }
 
+    /**
+     * Validate that the form inputs are correct.
+     * @return
+     */
     @Override
     ArrayList<ValidationCode> validateForm() {
         ArrayList<ValidationCode> returnCodes = new ArrayList<>();
@@ -261,6 +284,10 @@ public class AppointmentFormController extends Form implements Initializable, Co
         return returnCodes;
     }
 
+    /**
+     * Save the form.
+     * @throws SQLException
+     */
     @Override
     void saveForm() throws SQLException {
         AppointmentDAO appointmentDAO = new AppointmentDAO();

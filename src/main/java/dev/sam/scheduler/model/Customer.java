@@ -3,6 +3,9 @@ package dev.sam.scheduler.model;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
 
+/**
+ * The customer database entity
+ */
 public class Customer {
     private Integer id;
     private String name;

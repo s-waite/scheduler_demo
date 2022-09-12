@@ -9,6 +9,9 @@ import javafx.scene.control.TabPane;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * Data that is shared between controllers while the application is running
+ */
 public enum SharedData {
     INSTANCE;
 

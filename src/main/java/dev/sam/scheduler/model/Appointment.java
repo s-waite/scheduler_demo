@@ -2,6 +2,9 @@ package dev.sam.scheduler.model;
 
 import java.time.OffsetDateTime;
 
+/**
+ * The appointment database entity
+ */
 public class Appointment {
     private int id;
     private String title;

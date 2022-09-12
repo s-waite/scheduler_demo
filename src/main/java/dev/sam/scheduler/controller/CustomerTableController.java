@@ -17,7 +17,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
-// TODO: refactor to extend from table class
+/**
+ * Controller for the customer table view.
+ */
 public class CustomerTableController extends Table implements Initializable, Controller, Tab {
 
     @FXML
@@ -67,7 +69,11 @@ public class CustomerTableController extends Table implements Initializable, Con
     AppointmentDAO appointmentDAO;
 
 
-    // TODO refactor to inherit from table and extend tab
+    /**
+     * Initialize the scene.
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         SharedData.INSTANCE.setCustomerTableController(this);
@@ -127,16 +133,25 @@ public class CustomerTableController extends Table implements Initializable, Con
 
     }
 
+    /**
+     * Initialize the nodes of the scene.
+     */
     @Override
     public void initializeNodes() {
         initializeTable();
     }
 
+    /**
+     * Refresh the table so that all items in the database are present.
+     */
     public void refreshTable() {
         initializeTable();
         customerTableView.refresh();
     }
 
+    /**
+     * Set up click listeners for the nodes in the scene.
+     */
     @Override
     public void initializeClickListeners() {
         newCustomerButton.setOnAction(actionEvent -> {
@@ -242,6 +257,9 @@ public class CustomerTableController extends Table implements Initializable, Con
 
     }
 
+    /**
+     * Gets called from the main tab view controller when this tab is selected.
+     */
     @Override
     public void onThisTabSelected() {
         SharedData.INSTANCE.setActiveCustomer(null);

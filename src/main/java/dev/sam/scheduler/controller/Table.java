@@ -7,6 +7,9 @@ import javafx.scene.control.TableView;
 
 import java.util.List;
 
+/**
+ * Abstract class for controllers with a table
+ */
 public abstract class Table {
     <T> void initializeTable(TableView<T> tableView, List<T> tableItems) {
         tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);

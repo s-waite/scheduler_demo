@@ -26,6 +26,9 @@ import java.time.ZonedDateTime;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * Controller for the login form.
+ */
 public class LoginController implements Initializable, Controller {
     @FXML
     private FlagButton usFlagButton;
@@ -43,6 +46,11 @@ public class LoginController implements Initializable, Controller {
     private UserDAO userDAO;
 
 
+    /**
+     * Set up the scene.
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         userDAO = new UserDAO();
@@ -122,6 +130,10 @@ public class LoginController implements Initializable, Controller {
 
     }
 
+    /**
+     * Check the login to make sure it is valid.
+     * @return
+     */
     private boolean isValidLogin() {
         String userNameInput = userNameTextField.getText();
         String passwordInput = passwordField.getText();

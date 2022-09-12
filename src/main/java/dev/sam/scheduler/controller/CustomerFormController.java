@@ -222,6 +222,10 @@ public class CustomerFormController extends Form implements Initializable, Contr
         return returnCodes;
     }
 
+    /**
+     * Save the form.
+     * @throws SQLException
+     */
     @Override
     public void saveForm() throws SQLException {
         User activeUser = SharedData.INSTANCE.getActiveUser();

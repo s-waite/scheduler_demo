@@ -1,5 +1,8 @@
 package dev.sam.scheduler.model;
 
+/**
+ * The contact database entity
+ */
 public class Contact {
    private int id;
    private String contactName;

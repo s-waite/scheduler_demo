@@ -1,5 +1,8 @@
 package dev.sam.scheduler.model;
 
+/**
+ * Window sizes for the application to use
+ */
 public enum WindowSizes {
     WIDTH_LARGE(1200),
     WIDTH_MED(800),
