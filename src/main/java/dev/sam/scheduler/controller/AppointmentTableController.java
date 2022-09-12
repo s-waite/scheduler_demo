@@ -291,6 +291,7 @@ public class AppointmentTableController extends Table implements Controller, Tab
     /**
      * Filter the table based on the Filter enum.
      *
+     * LAMBDA: The setPredicate method uses a lambda expression because it is clearer and less verbose than creating a class for one predicate
      * @param filter The filter enum
      */
     private void filterTable(Filter filter) {

@@ -140,6 +140,7 @@ public class AppointmentFormController extends Form implements Initializable, Co
 
     /**
      * Set up click listeners for the scene
+     * LAMBDA: The click listeners use lambda expressions because it is clearer and less verbose than creating a class for one action
      */
     @Override
     public void initializeClickListeners() {
