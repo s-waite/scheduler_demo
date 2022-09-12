@@ -7,6 +7,7 @@ import dev.sam.scheduler.helper.StringHelper;
 import dev.sam.scheduler.model.Appointment;
 import dev.sam.scheduler.model.Contact;
 import dev.sam.scheduler.model.SharedData;
+import dev.sam.scheduler.model.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -227,6 +228,47 @@ public class AppointmentDAO implements DAO<Appointment> {
         DB.makeConnection();
         Statement stmt = DB.getConnection().createStatement();
         ResultSet rs = stmt.executeQuery("SELECT * FROM appointments WHERE Contact_ID = " + contact.getId());
+        while (rs.next()) {
+            int appointmentId = rs.getInt("Appointment_ID");
+            String title = rs.getString("Title");
+            String description = rs.getString("Description");
+            String location = rs.getString("Location");
+            String type = rs.getString("Type");
+            OffsetDateTime start = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Start"));
+            OffsetDateTime end = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("End"));
+            OffsetDateTime creationDate = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Create_Date"));
+            String createdBy = rs.getString("Created_By");
+            OffsetDateTime lastUpdatedDate = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Last_Update"));
+            String lastUpdatedBy = rs.getString("Last_Updated_By");
+            int customerId = rs.getInt("Customer_ID");
+            int userId = rs.getInt("User_ID");
+            int contactId = rs.getInt("Contact_ID");
+
+            allAppointments.add(new Appointment(
+                    appointmentId,
+                    title,
+                    description,
+                    location,
+                    type,
+                    start,
+                    end,
+                    creationDate,
+                    createdBy,
+                    lastUpdatedDate,
+                    lastUpdatedBy,
+                    customerId,
+                    userId,
+                    contactId
+            ));
+        }
+        return allAppointments;
+    }
+
+    public List<Appointment> getAllOfUser(User user) throws SQLException {
+        ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM appointments WHERE User_ID = " + user.getUserId());
         while (rs.next()) {
             int appointmentId = rs.getInt("Appointment_ID");
             String title = rs.getString("Title");
