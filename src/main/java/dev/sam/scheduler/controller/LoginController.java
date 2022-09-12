@@ -103,7 +103,6 @@ public class LoginController implements Initializable, Controller {
                     throw new RuntimeException(e);
                 }
             } else {
-                //TODO: show error
                 Alert invalidLoginAlert = new Alert(Alert.AlertType.ERROR);
                 invalidLoginAlert.setHeaderText("Invalid Login");
                 invalidLoginAlert.setContentText("Please check your credentials and try again");
@@ -112,6 +111,7 @@ public class LoginController implements Initializable, Controller {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                invalidLoginAlert.showAndWait();
             }
             try {
                 bufferedWriter.close();

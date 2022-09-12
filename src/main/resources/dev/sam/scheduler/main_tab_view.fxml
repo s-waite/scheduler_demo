@@ -22,5 +22,13 @@
               </children></AnchorPane>
       </content>
     </Tab>
+      <Tab fx:id="reportTab" text="Reports">
+          <content>
+              <AnchorPane minHeight="200.0" minWidth="400.0" prefHeight="1000.0" prefWidth="1000.0">
+                  <children>
+                      <fx:include source="report_tab.fxml" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  </children></AnchorPane>
+          </content>
+      </Tab>
   </tabs>
 </TabPane>

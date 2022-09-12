@@ -5,6 +5,7 @@ import dev.sam.scheduler.helper.DateAndTimeHelper;
 import dev.sam.scheduler.helper.SQLHelper;
 import dev.sam.scheduler.helper.StringHelper;
 import dev.sam.scheduler.model.Appointment;
+import dev.sam.scheduler.model.Contact;
 import dev.sam.scheduler.model.SharedData;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,7 +13,9 @@ import javafx.collections.ObservableList;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Month;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AppointmentDAO implements DAO<Appointment> {
@@ -34,6 +37,17 @@ public class AppointmentDAO implements DAO<Appointment> {
         DB.makeConnection();
         Statement stmt = DB.getConnection().createStatement();
         ResultSet rs = stmt.executeQuery("SELECT MAX(Appointment_ID) FROM appointments");
+        int maxId = 0;
+        while (rs.next()) {
+            maxId = rs.getInt(1);
+        }
+        return maxId;
+    }
+
+    public int getTotalNumOfAppointments() throws SQLException {
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT COUNT(*) as total FROM appointments");
         int maxId = 0;
         while (rs.next()) {
             maxId = rs.getInt(1);
@@ -182,5 +196,70 @@ public class AppointmentDAO implements DAO<Appointment> {
         Statement stmt = DB.getConnection().createStatement();
         stmt.executeUpdate("DELETE FROM appointments WHERE Appointment_ID = " + appointment.getId());
         DB.closeConnection();
+    }
+
+    public ArrayList<String> getDistinctAppointmentTypes() throws SQLException {
+        ArrayList<String> allTypes = new ArrayList<>();
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs =stmt.executeQuery("SELECT DISTINCT Type from appointments");
+        while (rs.next()) {
+            allTypes.add(rs.getString("Type"));
+        }
+        DB.closeConnection();
+        return allTypes;
+    }
+
+    public int getNumOfAppointmentTypeOfMonth(String appType, Month month) throws SQLException {
+        int numOfApps = 0;
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        String query = "SELECT Type, COUNT(*) as number from appointments where Type = " + "\"" + appType + "\"" + " AND MONTH(Start) = " + month.getValue();
+        ResultSet rs = stmt.executeQuery(query);
+        while (rs.next()) {
+            numOfApps = rs.getInt("number");
+        }
+        DB.closeConnection();
+        return numOfApps;
+    }
+    public List<Appointment> getAllOfContact(Contact contact) throws SQLException {
+        ObservableList<Appointment> allAppointments = FXCollections.observableArrayList();
+        DB.makeConnection();
+        Statement stmt = DB.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM appointments WHERE Contact_ID = " + contact.getId());
+        while (rs.next()) {
+            int appointmentId = rs.getInt("Appointment_ID");
+            String title = rs.getString("Title");
+            String description = rs.getString("Description");
+            String location = rs.getString("Location");
+            String type = rs.getString("Type");
+            OffsetDateTime start = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Start"));
+            OffsetDateTime end = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("End"));
+            OffsetDateTime creationDate = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Create_Date"));
+            String createdBy = rs.getString("Created_By");
+            OffsetDateTime lastUpdatedDate = DateAndTimeHelper.dbDateStringToDateTime(rs.getString("Last_Update"));
+            String lastUpdatedBy = rs.getString("Last_Updated_By");
+            int customerId = rs.getInt("Customer_ID");
+            int userId = rs.getInt("User_ID");
+            int contactId = rs.getInt("Contact_ID");
+
+            allAppointments.add(new Appointment(
+                    appointmentId,
+                    title,
+                    description,
+                    location,
+                    type,
+                    start,
+                    end,
+                    creationDate,
+                    createdBy,
+                    lastUpdatedDate,
+                    lastUpdatedBy,
+                    customerId,
+                    userId,
+                    contactId
+            ));
+        }
+        return allAppointments;
     }
 }
