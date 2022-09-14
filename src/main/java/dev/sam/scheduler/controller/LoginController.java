@@ -56,13 +56,13 @@ public class LoginController implements Initializable, Controller {
         userDAO = new UserDAO();
         stage = App.getStage();
         initializeNodes();
-        initializeClickListeners();
+        initializeClickListeners(resources);
     }
 
     /**
      * Initialize the click listeners for the scene.
      */
-    public void initializeClickListeners() {
+    public void initializeClickListeners(ResourceBundle bundle) {
         usFlagButton.setOnAction(actionEvent -> {
             // Reload the scene with a new locale if it is not already the active locale
             if (!usFlagButton.isChecked()) {
@@ -112,8 +112,8 @@ public class LoginController implements Initializable, Controller {
                 }
             } else {
                 Alert invalidLoginAlert = new Alert(Alert.AlertType.ERROR);
-                invalidLoginAlert.setHeaderText("Invalid Login");
-                invalidLoginAlert.setContentText("Please check your credentials and try again");
+                invalidLoginAlert.setHeaderText(bundle.getString("login.invalidHeader"));
+                invalidLoginAlert.setContentText(bundle.getString("login.invalidBody"));
                 try {
                     bufferedWriter.append(", unsuccessful");
                 } catch (IOException e) {
@@ -191,6 +191,11 @@ public class LoginController implements Initializable, Controller {
         locationLabel.setTextOverrun(OverrunStyle.CLIP);
         String locationLabelText = locationLabel.getText();
         locationLabel.setText(locationLabelText + ZoneId.systemDefault());
+
+    }
+
+    @Override
+    public void initializeClickListeners() {
 
     }
 }
