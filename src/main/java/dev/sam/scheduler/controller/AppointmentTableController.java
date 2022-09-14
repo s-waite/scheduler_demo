@@ -132,6 +132,7 @@ public class AppointmentTableController extends Table implements Controller, Tab
 
     /**
      * Set up the click listeners for the buttons in the scene
+     * LAMBDA: The click listeners use lambda expressions because it is clearer and less verbose than creating a class for one action
      */
     @Override
     public void initializeClickListeners() {
@@ -210,6 +211,7 @@ public class AppointmentTableController extends Table implements Controller, Tab
     /**
      * Populate the table and set the cell value factory for each column
      *
+     * LAMBDA: The cell value factories use lambda expressions because it is clearer and less verbose than creating a class for one action
      * @param tableView  The tableView to populate
      * @param tableItems The Filtered List of table items to populate the table
      * @param <T>        The type parameter
