@@ -145,6 +145,7 @@ public class AppointmentFormController extends Form implements Initializable, Co
     @Override
     public void initializeClickListeners() {
         cancelButton.setOnAction(actionEvent -> {
+            SharedData.INSTANCE.setActiveAppointment(null);
             Stage stage = (Stage) userIdInput.getScene().getWindow();
             stage.close();
         });
@@ -170,6 +171,7 @@ public class AppointmentFormController extends Form implements Initializable, Co
                     case TIME_ERR -> formErrors.add("Please enter valid times");
                     case START_DATE_BEFORE_END_ERR -> formErrors.add("Start date is before end date");
                     case CONFLICTING_APP_ERR -> formErrors.add("Customer has conflicting appointments");
+                    case USER_CONFLICTING_APP_ERR -> formErrors.add("User has conflicting appointments");
                 }
             }
             StringBuilder errorMsg = new StringBuilder();
@@ -211,35 +213,82 @@ public class AppointmentFormController extends Form implements Initializable, Co
             returnCodes.add(ValidationCode.EMPTY_FIELDS_ERR);
             return returnCodes;
         }
-
-        UserDAO userDAO = new UserDAO();
-        try {
-            if (!userDAO.userIdExists(Integer.parseInt(userIdInput.getText()))) {
-                returnCodes.add(ValidationCode.USER_ID_NOT_FOUND_ERR);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
         CustomerDAO customerDAO = new CustomerDAO();
         AppointmentDAO appointmentDAO = new AppointmentDAO();
-        try {
-            if (!customerDAO.customerIdExists(Integer.parseInt(customerIdInput.getText()))) {
-                returnCodes.add(ValidationCode.CUSTOMER_ID_NOT_FOUND_ERR);
-            } else {
-                List<Appointment> customerApps = appointmentDAO.getAllFromCustomerId(Integer.parseInt(customerIdInput.getText()));
-                for (Appointment appointment : customerApps) {
-                    Boolean isConflict = false;
-                    ZonedDateTime appointmentStart = appointment.getStartDateTime().toZonedDateTime();
-                    ZonedDateTime appointmentEnd = appointment.getEndDateTime().toZonedDateTime();
-                    ZonedDateTime proposedStart = LocalDateTime.parse(startDatePicker.getValue() + " " + startTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneOffset.UTC);
-                    ZonedDateTime proposedEnd = LocalDateTime.parse(endDatePicker.getValue() + " " + endTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneOffset.UTC);
+        UserDAO userDAO = new UserDAO();
 
-                    if ((proposedStart.isAfter(appointmentStart) || proposedStart.isEqual(appointmentStart)) && proposedStart.isBefore(appointmentEnd)) {
+        // if updating, ignore the appointment we are updating
+        try {
+            // Check to see if user id exist
+            if (!userDAO.userIdExists(Integer.parseInt(userIdInput.getText()))) {
+                returnCodes.add(ValidationCode.USER_ID_NOT_FOUND_ERR);
+            } else {
+                Boolean isConflict = false;
+                // If id does exist make sure the appointment times do not overlap with other appointments of this user
+                List<Appointment> userApps = appointmentDAO.getAllFromUserId(Integer.parseInt(userIdInput.getText()));
+                for (Appointment appointment : userApps) {
+                    ZonedDateTime  startLocal = ZonedDateTime.from(appointment.getStartDateTime()).withZoneSameInstant(ZoneId.systemDefault());
+                    ZonedDateTime  endLocal = ZonedDateTime.from(appointment.getEndDateTime()).withZoneSameInstant(ZoneId.systemDefault());
+                    ZonedDateTime startInpLocal = LocalDateTime.parse(startDatePicker.getValue() + " " + startTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneOffset.systemDefault());
+                    ZonedDateTime endInpLocal = LocalDateTime.parse(endDatePicker.getValue() + " " + endTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneOffset.systemDefault());
+                    if (appointment.getId() == Integer.parseInt(appIdInput.getText())) {
+                        if ((startInpLocal.isAfter(startLocal) || startInpLocal.equals(startLocal)) && (endInpLocal.isBefore(endLocal) || endInpLocal.isEqual(endLocal))) {
+                            break;
+                        }
+                    }
+
+                    if ((startInpLocal.isAfter(startLocal) || startInpLocal.isEqual(startLocal)) && startInpLocal.isBefore(endLocal)) {
                         isConflict = true;
                     }
 
-                    if ((proposedEnd.isAfter(appointmentStart) || proposedEnd.isEqual(appointmentStart)) && proposedEnd.isBefore(appointmentEnd)) {
+                    if ((endInpLocal.isAfter(startLocal) || endInpLocal.isEqual(startLocal)) && endInpLocal.isBefore(endLocal)) {
+                        isConflict = true;
+                    }
+
+                    if ((endInpLocal.isEqual(endLocal))) {
+                        isConflict = true;
+                    }
+
+                    if (isConflict) {
+                        returnCodes.add(ValidationCode.USER_CONFLICTING_APP_ERR);
+                        break;
+                    }
+                }
+            }
+        } catch (
+                SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        // if updating, ignore the appointment we are updating
+        try {
+            // Check to see if user id exist
+            if (!customerDAO.customerIdExists(Integer.parseInt(customerIdInput.getText()))) {
+                returnCodes.add(ValidationCode.CUSTOMER_ID_NOT_FOUND_ERR);
+            } else {
+                Boolean isConflict = false;
+                // If id does exist make sure the appointment times do not overlap with other appointments of this user
+                List<Appointment> userApps = appointmentDAO.getAllFromCustomerId(Integer.parseInt(customerIdInput.getText()));
+                for (Appointment appointment : userApps) {
+                    ZonedDateTime  startLocal = ZonedDateTime.from(appointment.getStartDateTime()).withZoneSameInstant(ZoneId.systemDefault());
+                    ZonedDateTime  endLocal = ZonedDateTime.from(appointment.getEndDateTime()).withZoneSameInstant(ZoneId.systemDefault());
+                    ZonedDateTime startInpLocal = LocalDateTime.parse(startDatePicker.getValue() + " " + startTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneOffset.systemDefault());
+                    ZonedDateTime endInpLocal = LocalDateTime.parse(endDatePicker.getValue() + " " + endTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneOffset.systemDefault());
+                    if (appointment.getId() == Integer.parseInt(appIdInput.getText())) {
+                        if ((startInpLocal.isAfter(startLocal) || startInpLocal.equals(startLocal)) && (endInpLocal.isBefore(endLocal) || endInpLocal.isEqual(endLocal))) {
+                            break;
+                        }
+                    }
+
+                    if ((startInpLocal.isAfter(startLocal) || startInpLocal.isEqual(startLocal)) && startInpLocal.isBefore(endLocal)) {
+                        isConflict = true;
+                    }
+
+                    if ((endInpLocal.isAfter(startLocal) || endInpLocal.isEqual(startLocal)) && endInpLocal.isBefore(endLocal)) {
+                        isConflict = true;
+                    }
+
+                    if ((endInpLocal.isEqual(endLocal))) {
                         isConflict = true;
                     }
 
@@ -253,6 +302,8 @@ public class AppointmentFormController extends Form implements Initializable, Co
                 SQLException e) {
             throw new RuntimeException(e);
         }
+
+
         try {
             ZonedDateTime startDateTime = LocalDateTime.parse(startDatePicker.getValue() + " " + startTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneId.systemDefault());
             ZonedDateTime endDateTime = LocalDateTime.parse(endDatePicker.getValue() + " " + endTimeInput.getText(), DateAndTimeHelper.formatter).atZone(ZoneId.systemDefault());
@@ -337,7 +388,7 @@ public class AppointmentFormController extends Form implements Initializable, Co
             activeAppointment.setLastUpdatedDate(modifyDate);
             activeAppointment.setLastUpdatedBy(modifiedBy);
             activeAppointment.setCustomerId(customerId);
-            activeAppointment.setCustomerId(userId);
+            activeAppointment.setUserId(userId);
             activeAppointment.setContactId(contactId);
             appointmentDAO.update(activeAppointment);
         }
